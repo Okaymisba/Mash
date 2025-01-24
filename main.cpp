@@ -7,7 +7,7 @@ using namespace std;
 
 int main()
 {
-    string code = "let x =5;";
+    string code = "x =5;";
 
     Tokenizer tokenizer;
     Evaluator evaluator;
