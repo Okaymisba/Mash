@@ -6,7 +6,6 @@
 vector<token> Tokenizer::tokenize(string &input)
 {
     vector<pair<string, string>> patterns = {
-        {"LET", "\\blet\\b"},
         {"IDENTIFIER", "[a-zA-Z_][a-zA-Z0-9_]*"},
         {"PRINT", "\\bprint\\b"},
         {"NUMBER", "\\d+"},
