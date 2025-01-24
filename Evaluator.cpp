@@ -2,7 +2,7 @@
 #include "Evaluator.h"
 
 void Evaluator::evaluate(){
-    cout<<"eval";
+    cout<<"eval HI";
     
 
 };
