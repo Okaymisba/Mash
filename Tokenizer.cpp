@@ -5,6 +5,7 @@
 
 vector<token> Tokenizer::tokenize(string &input)
 {
+    // Map of all the tokens
     vector<pair<string, string>> patterns = {
         {"IDENTIFIER", R"([a-zA-Z_][a-zA-Z0-9_]*)"},
         {"PRINT", R"(\bprint\b)"},
@@ -26,9 +27,6 @@ vector<token> Tokenizer::tokenize(string &input)
         regexString += "(" + patterns[i].second + ")";
     }
 
-    // Debugging regex string creation
-    cout << "Constructed Regex Pattern: " << regexString << endl;
-
     regex regexPattern(regexString);
     smatch match;
     vector<token> tokens;
@@ -37,18 +35,12 @@ vector<token> Tokenizer::tokenize(string &input)
 
     while (regex_search(searchStart, input.cend(), match, regexPattern))
     {
-        // Debugging matched groups
-        cout << "Matched Text: " << match.str(0) << endl;
 
         for (size_t i = 0; i < patterns.size(); ++i)
         {
-            cout << match[i + 1].matched << endl;
             if (match[i + 1].matched)
             {
                 string &key = patterns[i].first;
-
-                // Print matched token type and value
-                cout << "Matched Type: " << key << ", Value: " << match[i + 1].str() << endl;
 
                 if (key != "WHITESPACE")
                 {
