@@ -7,7 +7,7 @@ using namespace std;
 
 int main()
 {
-    string code = "x =5;";
+    string code = R"( x= 'M';)";
 
     Tokenizer tokenizer;
     Evaluator evaluator;
