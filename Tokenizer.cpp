@@ -7,8 +7,8 @@ vector<Token> Tokenizer::tokenize(string &input)
 {
     // Map of all the tokens
     vector<pair<string, string>> patterns = {
-        {"IDENTIFIER", R"([a-zA-Z_][a-zA-Z0-9_]*)"},
         {"PRINT", R"(\bprint\b)"},
+        {"IDENTIFIER", R"([a-zA-Z_][a-zA-Z0-9_]*)"},
         {"NUMBER", R"(\d+)"},
         {"ASSIGN", R"(=)"},
         {"PLUS", R"(\+)"},
