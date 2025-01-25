@@ -2,18 +2,11 @@
 #define PARSER_H
 
 #include <vector>
-#include "Token.h"
+#include "structs/Token.h"
+#include "structs/ASTNode.h"
 
 using namespace std;
 
-struct ASTNode
-{
-    string type;
-    string value;
-    vector<ASTNode> children;
-
-    ASTNode(const string &type, const string &value = "") : type(type), value(value) {}
-};
 
 class Parser
 {

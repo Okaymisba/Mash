@@ -5,7 +5,7 @@
 #include <iostream>
 #include <vector>
 
-#include "Token.h"
+#include "structs/Token.h"
 
 using namespace std;
 
