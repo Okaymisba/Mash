@@ -3,12 +3,12 @@
 #include <map>
 #include <regex>
 
-vector<token> Tokenizer::tokenize(string &input)
+vector<Token> Tokenizer::tokenize(string &input)
 {
     // Map of all the tokens
     vector<pair<string, string>> patterns = {
-        {"IDENTIFIER", R"([a-zA-Z_][a-zA-Z0-9_]*)"},
         {"PRINT", R"(\bprint\b)"},
+        {"IDENTIFIER", R"([a-zA-Z_][a-zA-Z0-9_]*)"},
         {"NUMBER", R"(\d+)"},
         {"ASSIGN", R"(=)"},
         {"PLUS", R"(\+)"},
@@ -29,7 +29,7 @@ vector<token> Tokenizer::tokenize(string &input)
 
     regex regexPattern(regexString);
     smatch match;
-    vector<token> tokens;
+    vector<Token> tokens;
 
     string::const_iterator searchStart(input.cbegin());
 
