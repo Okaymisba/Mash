@@ -14,7 +14,7 @@ vector<token> Tokenizer::tokenize(string &input)
         {"PLUS", R"(\+)"},
         {"SEMICOLON", R"(;)"},
         {"WHITESPACE", R"(\s+)"},
-        {"STRING", R"("[a-zA-Z]")"},
+        {"STRING", R"(".*?")"},
         {"CHAR", R"('([a-zA-Z])')"},
     };
 
