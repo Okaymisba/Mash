@@ -3,7 +3,7 @@
 #include <map>
 #include <regex>
 
-vector<token> Tokenizer::tokenize(string &input)
+vector<Token> Tokenizer::tokenize(string &input)
 {
     // Map of all the tokens
     vector<pair<string, string>> patterns = {
@@ -29,7 +29,7 @@ vector<token> Tokenizer::tokenize(string &input)
 
     regex regexPattern(regexString);
     smatch match;
-    vector<token> tokens;
+    vector<Token> tokens;
 
     string::const_iterator searchStart(input.cbegin());
 
