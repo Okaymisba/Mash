@@ -2,6 +2,8 @@
 #include "Parser.h"
 #include "Tokenizer.h"
 
+using namespace std;
+
 ASTNode Parser::parse()
 {
     ASTNode root("PROGRAM");
@@ -44,15 +46,15 @@ Token Parser::consume(const string &expectedType)
 ASTNode Parser::parseExpresseion()
 {
     Token token = peek();
-    if (token.type == "IDENTIFIER" || token.type == "NUMBER")
+    if (token.type == "IDENTIFIER" || token.type == "NUMBER" || token.type == "PLUS" || token.type == "STRING" || token.type == "CHAR")
     {
         consume(token.type);
-        ASTNode node("LITERAL", token.value);
+        ASTNode node(token.type, token.value);
         return node;
     }
     else
     {
-        throw runtime_error("Invalid expression: expected NUMBER or IDENTIFIER, got " + token.type);
+        throw runtime_error("Syntax error: expected IDENTIFIER, NUMBER, PLUS, STRING, or CHAR, but found '" + token.type + "'");
     }
 }
 
@@ -60,10 +62,14 @@ ASTNode Parser::parseAssignment()
 {
     Token identifier = consume("IDENTIFIER");
     consume("ASSIGN");
-    ASTNode value = parseExpresseion();
     ASTNode assignment("ASSIGNMENT");
     assignment.children.push_back(ASTNode("IDENTIFIER", identifier.value));
-    assignment.children.push_back(value);
+
+    while (peek().type != "SEMICOLON")
+    {
+        ASTNode value = parseExpresseion();
+        assignment.children.push_back(value);
+    }
     return assignment;
 }
 
