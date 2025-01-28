@@ -7,7 +7,7 @@ vector<Token> Tokenizer::tokenize(string &input)
 {
     // Map of all the tokens
     vector<pair<string, string>> patterns = {
-    {"IF", R"(\bif\b)"},
+        {"IF", R"(\bif\b)"},
         {"PRINT", R"(\bprint\b)"},
         {"LINE_BREAK", R"(\\n)"},
         {"BOOL", R"(\bTrue\b)"},
@@ -24,14 +24,10 @@ vector<Token> Tokenizer::tokenize(string &input)
         {"SEMICOLON", R"(;)"},
         {"OPEN_ROUND_BRACKET", R"(\()"},
         {"CLOSE_ROUND_BRACKET", R"(\))"},
-        {"OPEN_CURLY_BRACKET", R"(\{)"},
+        {"OPEN_CURLY_BRACKET", R"(\{)"},fFFFFf
         {"CLOSE_CURLY_BRACKET", R"(\})"},
         {"OPEN_SQUARE_BRACKET", R"(\[)"},
-        {"CLOSE_SQUARE_BRACKET", R"(\])"}
-};
-
-        
-
+        {"CLOSE_SQUARE_BRACKET", R"(\])"}};
 
     // Constructing a single regex pattern from all token patterns
     string regexString;
@@ -53,13 +49,13 @@ vector<Token> Tokenizer::tokenize(string &input)
 
         for (size_t i = 0; i < patterns.size(); ++i)
         {
-            if (match[i+1].matched)
+            if (match[i + 1].matched)
             {
                 string &key = patterns[i].first;
 
                 if (key != "WHITESPACE")
                 {
-                    tokens.emplace_back(key, match[i+1].str());
+                    tokens.emplace_back(key, match[i + 1].str());
                 }
             }
         }
@@ -70,4 +66,3 @@ vector<Token> Tokenizer::tokenize(string &input)
 
     return tokens;
 }
-
