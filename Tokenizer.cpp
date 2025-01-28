@@ -24,7 +24,7 @@ vector<Token> Tokenizer::tokenize(string &input)
         {"SEMICOLON", R"(;)"},
         {"OPEN_ROUND_BRACKET", R"(\()"},
         {"CLOSE_ROUND_BRACKET", R"(\))"},
-        {"OPEN_CURLY_BRACKET", R"(\{)"},fFFFFf
+        {"OPEN_CURLY_BRACKET", R"(\{)"},
         {"CLOSE_CURLY_BRACKET", R"(\})"},
         {"OPEN_SQUARE_BRACKET", R"(\[)"},
         {"CLOSE_SQUARE_BRACKET", R"(\])"}};
