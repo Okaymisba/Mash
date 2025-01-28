@@ -14,7 +14,7 @@ vector<Token> Tokenizer::tokenize(string &input)
         {"LINE_BREAK", R"(\\n)"},
         {"BOOL", R"(\bTrue\b)"},
         {"BOOL", R"(\bFalse\b)"},
-        {"DECIMAL", R"(\bdec\b)"},
+        {"FLOAT", R"(\bfloat\b)"},
         {"INTEGER", R"(\bint\b)"},
         {"STRING", R"("[^"]*")"},
         {"CHAR", R"('[^']')"},
