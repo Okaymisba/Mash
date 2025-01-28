@@ -26,6 +26,7 @@ int main()
     string code = readFile(filePath);
     cout << code << endl;
 
+
     Tokenizer tokenizer;
     Evaluator evaluator;
 
@@ -36,7 +37,7 @@ int main()
         cout << "Token Type: " << token.type << ", Token Value: " << token.value << endl;
     }
 
-    cout << "\nIgnore bellow this: " << endl;
+    cout << "\nIgnore below this: " << endl;
     try
     {
         Parser parser(tokens);
