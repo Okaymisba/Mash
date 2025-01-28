@@ -8,6 +8,8 @@ vector<Token> Tokenizer::tokenize(string &input)
     // Map of all the tokens
     vector<pair<string, string>> patterns = {
         {"IF", R"(\bif\b)"},
+        {"WHILE", R"(\bwhile\b)"},
+        {"FOR", R"(\bfor\b)"},
         {"PRINT", R"(\bprint\b)"},
         {"LINE_BREAK", R"(\\n)"},
         {"BOOL", R"(\bTrue\b)"},
@@ -24,7 +26,7 @@ vector<Token> Tokenizer::tokenize(string &input)
         {"SEMICOLON", R"(;)"},
         {"OPEN_ROUND_BRACKET", R"(\()"},
         {"CLOSE_ROUND_BRACKET", R"(\))"},
-        {"OPEN_CURLY_BRACKET", R"(\{)"},fFFFFf
+        {"OPEN_CURLY_BRACKET", R"(\{)"},
         {"CLOSE_CURLY_BRACKET", R"(\})"},
         {"OPEN_SQUARE_BRACKET", R"(\[)"},
         {"CLOSE_SQUARE_BRACKET", R"(\])"}};

@@ -21,7 +21,7 @@ void printAST(const ASTNode &node, int indent = 0)
 
 int main()
 {
-    string code = R"(x == False)";
+    string code = R"(while (x != 5)\n{print "right"\ni+=1;})";
 
     Tokenizer tokenizer;
     Evaluator evaluator;
