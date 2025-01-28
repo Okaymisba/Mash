@@ -7,16 +7,31 @@ vector<Token> Tokenizer::tokenize(string &input)
 {
     // Map of all the tokens
     vector<pair<string, string>> patterns = {
+    {"IF", R"(\bif\b)"},
         {"PRINT", R"(\bprint\b)"},
+        {"LINE_BREAK", R"(\\n)"},
+        {"BOOL", R"(\bTrue\b)"},
+        {"BOOL", R"(\bFalse\b)"},
+        {"DECIMAL", R"(\bdec\b)"},
+        {"INTEGER", R"(\bint\b)"},
+        {"STRING", R"("[^"]*")"},
+        {"CHAR", R"('[^']')"},
+        {"COMPARISON_OPERATOR", R"(==|!=|<=|>=|<|>)"},
+        {"ASSIGN", R"(=)"},
+        {"ARITHMETIC_OPERATOR", R"([+\*/\-])"},
         {"IDENTIFIER", R"([a-zA-Z_][a-zA-Z0-9_]*)"},
         {"NUMBER", R"(\d+)"},
-        {"ASSIGN", R"(=)"},
-        {"PLUS", R"(\+)"},
         {"SEMICOLON", R"(;)"},
-        {"WHITESPACE", R"(\s+)"},
-        {"STRING", R"(".*?")"},
-        {"CHAR", R"('([a-zA-Z])')"},
-    };
+        {"OPEN_ROUND_BRACKET", R"(\()"},
+        {"CLOSE_ROUND_BRACKET", R"(\))"},
+        {"OPEN_CURLY_BRACKET", R"(\{)"},
+        {"CLOSE_CURLY_BRACKET", R"(\})"},
+        {"OPEN_SQUARE_BRACKET", R"(\[)"},
+        {"CLOSE_SQUARE_BRACKET", R"(\])"}
+};
+
+        
+
 
     // Constructing a single regex pattern from all token patterns
     string regexString;
@@ -38,13 +53,13 @@ vector<Token> Tokenizer::tokenize(string &input)
 
         for (size_t i = 0; i < patterns.size(); ++i)
         {
-            if (match[i + 1].matched)
+            if (match[i+1].matched)
             {
                 string &key = patterns[i].first;
 
                 if (key != "WHITESPACE")
                 {
-                    tokens.emplace_back(key, match[i + 1].str());
+                    tokens.emplace_back(key, match[i+1].str());
                 }
             }
         }
@@ -55,3 +70,4 @@ vector<Token> Tokenizer::tokenize(string &input)
 
     return tokens;
 }
+

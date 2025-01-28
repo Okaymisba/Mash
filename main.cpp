@@ -21,7 +21,7 @@ void printAST(const ASTNode &node, int indent = 0)
 
 int main()
 {
-    string code = R"( x= 'M')";
+    string code = R"(x == False)";
 
     Tokenizer tokenizer;
     Evaluator evaluator;
@@ -33,7 +33,7 @@ int main()
         cout << "Token Type: " << token.type << ", Token Value: " << token.value << endl;
     }
 
-    cout << "\nIgnore bellow this: " << endl;
+    cout << "\nIgnore below this: " << endl;
     try
     {
         Parser parser(tokens);
