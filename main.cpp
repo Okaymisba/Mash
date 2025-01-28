@@ -2,6 +2,7 @@
 #include "Tokenizer.h"
 #include "Evaluator.h"
 #include "Parser.h"
+#include "func/readFile/readFile.h"
 
 using namespace std;
 
@@ -21,7 +22,9 @@ void printAST(const ASTNode &node, int indent = 0)
 
 int main()
 {
-    string code = R"( x= 'M')";
+    string filePath = "SourceCode.txt";
+    string code = readFile(filePath);
+    cout << code << endl;
 
     Tokenizer tokenizer;
     Evaluator evaluator;
@@ -44,7 +47,7 @@ int main()
     {
         cerr << "Error: " << e.what() << endl;
     }
-    cout << "Uptill here" << endl;
+    cout << "\nUptill here" << endl;
 
     return 0;
 };
