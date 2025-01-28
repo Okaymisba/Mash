@@ -42,8 +42,7 @@ Token Parser::consume(const string &expectedType)
     }
 }
 
-// TODO: This needs to be further modified to handle the parsing to the semicolon
-ASTNode Parser::parseExpresseion()
+ASTNode Parser::parseExpression()
 {
     Token token = peek();
     if (token.type == "IDENTIFIER" || token.type == "NUMBER" || token.type == "PLUS" || token.type == "STRING" || token.type == "CHAR")
@@ -54,7 +53,7 @@ ASTNode Parser::parseExpresseion()
     }
     else
     {
-        throw runtime_error("Syntax error: expected IDENTIFIER, NUMBER, PLUS, STRING, or CHAR, but found '" + token.type + "'");
+        throw runtime_error("Syntax error: Unexpected Token: '" + token.type + "'");
     }
 }
 
@@ -67,7 +66,7 @@ ASTNode Parser::parseAssignment()
 
     while (peek().type != "SEMICOLON")
     {
-        ASTNode value = parseExpresseion();
+        ASTNode value = parseExpression();
         assignment.children.push_back(value);
     }
     return assignment;
@@ -76,7 +75,7 @@ ASTNode Parser::parseAssignment()
 ASTNode Parser::parsePrintStatement()
 {
     consume("PRINT");
-    ASTNode expression = parseExpresseion();
+    ASTNode expression = parseExpression();
     ASTNode printNode("PRINT");
     printNode.children.push_back(expression);
     return printNode;
