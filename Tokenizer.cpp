@@ -23,6 +23,7 @@ vector<Token> Tokenizer::tokenize(string &input)
         {"ARITHMETIC_OPERATOR", R"([+\*/\-])"},
         {"IDENTIFIER", R"([a-zA-Z_][a-zA-Z0-9_]*)"},
         {"NUMBER", R"(\d+)"},
+        {"WHITESPACE", R"(\s*)"},
         {"SEMICOLON", R"(;)"},
         {"OPEN_ROUND_BRACKET", R"(\()"},
         {"CLOSE_ROUND_BRACKET", R"(\))"},
