@@ -45,7 +45,7 @@ Token Parser::consume(const string &expectedType)
 ASTNode Parser::parseExpression()
 {
     Token token = peek();
-    if (token.type == "IDENTIFIER" || token.type == "NUMBER" || token.type == "PLUS" || token.type == "STRING" || token.type == "CHAR")
+    if (token.type == "IDENTIFIER" || token.type == "NUMBER" || token.type == "ARITHMETIC_OPERATOR" || token.type == "STRING" || token.type == "CHAR")
     {
         consume(token.type);
         ASTNode node(token.type, token.value);
@@ -69,9 +69,12 @@ ASTNode Parser::parseAssignment()
         ASTNode value = parseExpression();
         assignment.children.push_back(value);
     }
+    consume("SEMICOLON");
+    consume("LINE_BREAK");
     return assignment;
 }
 
+// TODO: Handling of expressions in print
 ASTNode Parser::parsePrintStatement()
 {
     consume("PRINT");
