@@ -14,5 +14,4 @@ struct ASTNode
     ASTNode(const string &type, const string &value = "") : type(type), value(value) {}
 };
 
-
 #endif

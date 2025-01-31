@@ -26,7 +26,6 @@ int main()
     string code = readFile(filePath);
     cout << code << endl;
 
-
     Tokenizer tokenizer;
     Evaluator evaluator;
 
@@ -38,18 +37,14 @@ int main()
     }
 
     cout << "\nIgnore below this: " << endl;
-    try
-    {
-        Parser parser(tokens);
-        ASTNode ast = parser.parse();
-        printAST(ast);
-    }
-    catch (const runtime_error &e)
-    {
-        cerr << "Error: " << e.what() << endl;
-    }
+
+    Parser parser(tokens);
+    ASTNode ast = parser.parse();
+    printAST(ast);
+
     cout << "\nUntill here" << endl;
+
+    evaluator.evaluate(ast);
 
     return 0;
 }
-
