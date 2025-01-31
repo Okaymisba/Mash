@@ -78,9 +78,14 @@ ASTNode Parser::parseAssignment()
 ASTNode Parser::parsePrintStatement()
 {
     consume("PRINT");
-    ASTNode expression = parseExpression();
+    consume("OPEN_ROUND_BRACKET");
     ASTNode printNode("PRINT");
-    printNode.children.push_back(expression);
+    while (peek().type != "CLOSE_ROUND_BRACKET")
+    {
+        ASTNode expression = parseExpression();
+        printNode.children.push_back(expression);
+    }
+    consume("CLOSE_ROUND_BRACKET");
     return printNode;
 }
 
