@@ -7,7 +7,6 @@
 
 using namespace std;
 
-
 class Parser
 {
 public:
@@ -23,7 +22,7 @@ private:
 
     Token consume(const string &expectedType);
 
-    ASTNode parseExpresseion();
+    ASTNode parseExpression();
 
     ASTNode parseAssignment();
 
