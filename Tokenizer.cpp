@@ -9,6 +9,8 @@ vector<Token> Tokenizer::tokenize(string &input)
     vector<pair<string, string>> patterns = {
         {"IF", R"(\bif\b)"},
         {"PRINT", R"(\bprint\b)"},
+        {"FOR", R"(\bfor\b)"},
+        {"WHILE", R"(\bwhile\b)"},
         {"LINE_BREAK", R"(\\n)"},
         {"BOOL", R"(\bTrue\b)"},
         {"BOOL", R"(\bFalse\b)"},

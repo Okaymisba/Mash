@@ -1,2 +1,4 @@
-x = 5;
-print x
+for(){
+    print("checking for loop");
+    exit;
+}
