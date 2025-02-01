@@ -26,7 +26,6 @@ int main()
     string code = readFile(filePath);
     cout << code << endl;
 
-
     Tokenizer tokenizer;
     Evaluator evaluator;
 
