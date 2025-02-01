@@ -27,6 +27,8 @@ int main()
     cout << code << endl;
 
     Tokenizer tokenizer;
+    Evaluator evaluator;
+
     vector<Token> tokens = tokenizer.tokenize(code);
 
     for (const auto &token : tokens)
@@ -40,16 +42,12 @@ int main()
         Parser parser(tokens);
         ASTNode ast = parser.parse();
         printAST(ast);
-
-        // Now actually use the Evaluator
-        Evaluator evaluator;
-        evaluator.evaluate(ast);
     }
     catch (const runtime_error &e)
     {
         cerr << "Error: " << e.what() << endl;
     }
-    cout << "\nUntil here" << endl;
+    cout << "\nUntill here" << endl;
 
     return 0;
 }
