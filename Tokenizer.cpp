@@ -8,11 +8,13 @@ vector<Token> Tokenizer::tokenize(string &input)
     // Map of all the tokens
     vector<pair<string, string>> patterns = {
         {"IF", R"(\bif\b)"},
+        {"WHILE", R"(\bwhile\b)"},
+        {"FOR", R"(\bfor\b)"},
         {"PRINT", R"(\bprint\b)"},
         {"LINE_BREAK", R"(\\n)"},
         {"BOOL", R"(\bTrue\b)"},
         {"BOOL", R"(\bFalse\b)"},
-        {"DECIMAL", R"(\bdec\b)"},
+        {"FLOAT", R"(\bfloat\b)"},
         {"INTEGER", R"(\bint\b)"},
         {"STRING", R"("[^"]*")"},
         {"CHAR", R"('[^']')"},
@@ -21,6 +23,7 @@ vector<Token> Tokenizer::tokenize(string &input)
         {"ARITHMETIC_OPERATOR", R"([+\*/\-])"},
         {"IDENTIFIER", R"([a-zA-Z_][a-zA-Z0-9_]*)"},
         {"NUMBER", R"(\d+)"},
+        {"WHITESPACE", R"(\s*)"},
         {"SEMICOLON", R"(;)"},
         {"OPEN_ROUND_BRACKET", R"(\()"},
         {"CLOSE_ROUND_BRACKET", R"(\))"},
