@@ -7,15 +7,14 @@ vector<Token> Tokenizer::tokenize(string &input)
 {
     // Map of all the tokens
     vector<pair<string, string>> patterns = {
-        {"CHECK IF", R"(\bcheck\s*if\b)"},
+        {"CHECK_IF", R"(\bcheck\s*if\b)"},
         {"ELSE",R"(\belse\b)"},
         {"ELSE IF",R"(\belse\s+if\b)"},
         {"PRINT", R"(\bprint\b)"},
         {"FOR", R"(\bfor\b)"},
         {"WHILE", R"(\bwhile\b)"},
         {"LINE_BREAK", R"(\\n)"},
-        {"BOOL", R"(\bTrue\b)"},
-        {"BOOL", R"(\bFalse\b)"},
+        {"BOOL", R"(\b(?:True|False)\b)"},
         {"FLOAT", R"(\bfloat\b)"},
         {"INTEGER", R"(\bint\b)"},
         {"STRING", R"("[^"]*")"},
