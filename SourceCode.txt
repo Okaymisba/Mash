@@ -1,4 +1,3 @@
-for(){
-    print("checking for loop");
-    exit;
+check if (x != True){
+    print(x);
 }
