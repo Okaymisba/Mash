@@ -110,6 +110,17 @@ ASTNode Parser::parsePrintStatement()
     return printNode;
 }
 
+ASTNode Parser::parseIfStatement()
+{
+    consume("CHECK_IF");
+    ASTNode ifStatement("IF");
+    ASTNode condition = parseCondition();
+    ifStatement.children.push_back(condition);
+    ASTNode body = parseBody();
+    ifStatement.children.push_back(body);
+    return ifStatement;
+}
+
 ASTNode Parser::parseStatement()
 {
     Token token = peek();
@@ -120,6 +131,10 @@ ASTNode Parser::parseStatement()
     else if (token.type == "IDENTIFIER")
     {
         return parseAssignment();
+    }
+    else if (token.type == "CHECK_IF")
+    {
+        return parseIfStatement();
     }
     else
     {

@@ -28,6 +28,12 @@ private:
 
     ASTNode parsePrintStatement();
 
+    ASTNode parseIfStatement();
+
+    ASTNode parseCondition();
+
+    ASTNode parseBody();
+
     ASTNode parseStatement();
 };
 
