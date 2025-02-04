@@ -25,7 +25,7 @@ ASTNode Parser::parseExpression()
         return literal;
     }
 
-    else if (token.type == "IDENTIFIER" || token.type == "NUMBER" || token.type == "ARITHMETIC_OPERATOR" || token.type == "STRING" || token.type == "CHAR" || token.type == "BOOL")
+    else if (token.type == "IDENTIFIER" || token.type == "INTEGER" || token.type == "ARITHMETIC_OPERATOR" || token.type == "STRING" || token.type == "CHAR" || token.type == "BOOL" || token.type == "DOUBLE" || token.type == "FLOAT")
     {
         consume(token.type);
         ASTNode node(token.type, token.value);
