@@ -8,8 +8,8 @@ vector<Token> Tokenizer::tokenize(string &input)
     // Map of all the tokens
     vector<pair<string, string>> patterns = {
         {"CHECK_IF", R"(\bcheck\s*if\b)"},
-        {"ELSE IF", R"(\belse\s+if\b)"},
         {"ELSE", R"(\belse\b)"},
+        {"ELSE IF", R"(\belse\s+if\b)"},
         {"PRINT", R"(\bprint\b)"},
         {"FOR", R"(\bfor\b)"},
         {"WHILE", R"(\bwhile\b)"},
@@ -18,7 +18,7 @@ vector<Token> Tokenizer::tokenize(string &input)
         {"FLOAT", R"(\b(?:float|\d+\.\d{1,7})\b)"},
         {"DOUBLE", R"(\b\d+\.\d{8,15}\b)"},
         {"INTEGER", R"(\b(?:int|\d+)\b)"},
-        {"STRING", R"("([^"])*")"},
+        {"STRING", R"("[^"]*")"},
         {"CHAR", R"('[^']')"},
         {"COMPARISON_OPERATOR", R"(==|!=|<=|>=|<|>)"},
         {"ASSIGNMENT_OPERATOR", R"(\+=|\-=|/=|\*=|\%=)"},
