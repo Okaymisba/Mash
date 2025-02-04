@@ -1,3 +1,2 @@
-check if (x != False){
-    print(x);
-}
+x = "Pakistan" ;
+print(x);
