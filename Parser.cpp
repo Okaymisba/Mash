@@ -26,15 +26,6 @@ ASTNode Parser::parse()
     return root;
 };
 
-Token Parser::peek()
-{
-    if (currentIndex < tokens.size())
-    {
-        return tokens[currentIndex];
-    }
-    return Token("EOF", "");
-};
-
 Token Parser::consume(const string &expectedType)
 {
     Token token = peek();
