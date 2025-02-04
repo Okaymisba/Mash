@@ -9,11 +9,18 @@ ASTNode Parser::parse()
     ASTNode root("PROGRAM");
     while (peek().type != "EOF")
     {
-        ASTNode statement = parseStatement();
-        root.children.push_back(statement);
-        if (peek().type == "SEMICOLON")
+        if (peek().type == "LINE_BREAK")
         {
-            consume("SEMICOLON");
+            consume("LINE_BREAK");
+        }
+        else
+        {
+            ASTNode statement = parseStatement();
+            root.children.push_back(statement);
+            if (peek().type == "SEMICOLON")
+            {
+                consume("SEMICOLON");
+            }
         }
     }
     return root;
@@ -66,7 +73,7 @@ ASTNode Parser::parseExpression()
         return literal;
     }
 
-    else if (token.type == "IDENTIFIER" || token.type == "NUMBER" || token.type == "ARITHMETIC_OPERATOR" || token.type == "STRING" || token.type == "CHAR")
+    else if (token.type == "IDENTIFIER" || token.type == "NUMBER" || token.type == "ARITHMETIC_OPERATOR" || token.type == "STRING" || token.type == "CHAR" || token.type == "BOOL")
     {
         consume(token.type);
         ASTNode node(token.type, token.value);
@@ -107,6 +114,10 @@ ASTNode Parser::parsePrintStatement()
         printNode.children.push_back(expression);
     }
     consume("CLOSE_ROUND_BRACKET");
+    if (peek().type == "SEMICOLON")
+    {
+        consume("SEMICOLON");
+    }
     return printNode;
 }
 

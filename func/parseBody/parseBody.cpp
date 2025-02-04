@@ -12,9 +12,15 @@ ASTNode Parser::parseBody()
 
     while (peek().type != "CLOSE_CURLY_BRACKET")
     {
-
-        body.children.push_back(ASTNode(peek().type, peek().value));
-        consume(peek().type);
+        if (peek().type == "LINE_BREAK")
+        {
+            consume("LINE_BREAK");
+        }
+        else
+        {
+            ASTNode statement = parseStatement();
+            body.children.push_back(statement);
+        }
     }
 
     consume("CLOSE_CURLY_BRACKET");
