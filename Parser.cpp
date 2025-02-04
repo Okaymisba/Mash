@@ -9,75 +9,22 @@ ASTNode Parser::parse()
     ASTNode root("PROGRAM");
     while (peek().type != "EOF")
     {
-        ASTNode statement = parseStatement();
-        root.children.push_back(statement);
-        if (peek().type == "SEMICOLON")
+        if (peek().type == "LINE_BREAK")
         {
-            consume("SEMICOLON");
+            consume("LINE_BREAK");
+        }
+        else
+        {
+            ASTNode statement = parseStatement();
+            root.children.push_back(statement);
+            if (peek().type == "SEMICOLON")
+            {
+                consume("SEMICOLON");
+            }
         }
     }
     return root;
 };
-
-Token Parser::peek()
-{
-    if (currentIndex < tokens.size())
-    {
-        return tokens[currentIndex];
-    }
-    return Token("EOF", "");
-};
-
-Token Parser::consume(const string &expectedType)
-{
-    Token token = peek();
-    if (token.type == expectedType)
-    {
-        currentIndex++;
-        return token;
-    }
-    else
-    {
-        throw runtime_error("Unexpected token: expected " + expectedType + ", got " + token.type);
-    }
-}
-
-ASTNode Parser::parseExpression()
-{
-    Token token = peek();
-
-    if (token.type == "OPEN_ROUND_BRACKET")
-    {
-        if (token.type == "OPEN_ROUND_BRACKET")
-        {
-            consume("OPEN_ROUND_BRACKET");
-        }
-
-        ASTNode literal("EXPRESSION");
-
-        while (peek().type != "CLOSE_ROUND_BRACKET")
-        {
-            ASTNode expression = parseExpression();
-            literal.children.push_back(expression);
-        }
-
-        consume("CLOSE_ROUND_BRACKET");
-
-        return literal;
-    }
-
-    else if (token.type == "IDENTIFIER" || token.type == "NUMBER" || token.type == "ARITHMETIC_OPERATOR" || token.type == "STRING" || token.type == "CHAR")
-    {
-        consume(token.type);
-        ASTNode node(token.type, token.value);
-        return node;
-    }
-
-    else
-    {
-        throw runtime_error("Syntax error: Unexpected Token: '" + token.type + "'");
-    }
-}
 
 ASTNode Parser::parseAssignment()
 {
@@ -107,7 +54,46 @@ ASTNode Parser::parsePrintStatement()
         printNode.children.push_back(expression);
     }
     consume("CLOSE_ROUND_BRACKET");
+    if (peek().type == "SEMICOLON")
+    {
+        consume("SEMICOLON");
+    }
     return printNode;
+}
+
+ASTNode Parser::parseIfStatement()
+{
+    consume("CHECK_IF");
+    ASTNode ifStatement("IF STATEMENT");
+
+    ASTNode ifNode("IF");
+    ASTNode condition = parseCondition();
+    ifNode.children.push_back(condition);
+    ASTNode body = parseBody();
+    ifNode.children.push_back(body);
+    ifStatement.children.push_back(ifNode);
+
+    while (peek().type == "ELSE IF")
+    {
+        consume("ELSE IF");
+        ASTNode elseIfNode("ELSE IF");
+        ASTNode condition = parseCondition();
+        elseIfNode.children.push_back(condition);
+        ASTNode body = parseBody();
+        elseIfNode.children.push_back(body);
+        ifStatement.children.push_back(elseIfNode);
+    }
+
+    if (peek().type == "ELSE")
+    {
+        consume("ELSE");
+        ASTNode elseNode("ELSE");
+        ASTNode body = parseBody();
+        elseNode.children.push_back(body);
+        ifStatement.children.push_back(elseNode);
+    }
+
+    return ifStatement;
 }
 
 ASTNode Parser::parseStatement()
@@ -120,6 +106,10 @@ ASTNode Parser::parseStatement()
     else if (token.type == "IDENTIFIER")
     {
         return parseAssignment();
+    }
+    else if (token.type == "CHECK_IF")
+    {
+        return parseIfStatement();
     }
     else
     {
