@@ -124,11 +124,35 @@ ASTNode Parser::parsePrintStatement()
 ASTNode Parser::parseIfStatement()
 {
     consume("CHECK_IF");
-    ASTNode ifStatement("IF");
+    ASTNode ifStatement("IF STATEMENT");
+
+    ASTNode ifNode("IF");
     ASTNode condition = parseCondition();
-    ifStatement.children.push_back(condition);
+    ifNode.children.push_back(condition);
     ASTNode body = parseBody();
-    ifStatement.children.push_back(body);
+    ifNode.children.push_back(body);
+    ifStatement.children.push_back(ifNode);
+
+    while (peek().type == "ELSE IF")
+    {
+        consume("ELSE IF");
+        ASTNode elseIfNode("ELSE IF");
+        ASTNode condition = parseCondition();
+        elseIfNode.children.push_back(condition);
+        ASTNode body = parseBody();
+        elseIfNode.children.push_back(body);
+        ifStatement.children.push_back(elseIfNode);
+    }
+
+    if (peek().type == "ELSE")
+    {
+        consume("ELSE");
+        ASTNode elseNode("ELSE");
+        ASTNode body = parseBody();
+        elseNode.children.push_back(body);
+        ifStatement.children.push_back(elseNode);
+    }
+
     return ifStatement;
 }
 
