@@ -1,3 +1,8 @@
-check if (x != False){
+x = 0.68876437563475635 ;
+check if (x!=False){
     print(x);
+} else if (x == True){
+    print(y);
+} else {
+    print(z);
 }
