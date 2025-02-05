@@ -42,33 +42,39 @@ void Evaluator::handleAssignment(const ASTNode &node) {
 }
 
 void Evaluator::handlePrint(const ASTNode &node) {
-    if (node.children.size() < 2) {
+    if (node.children.size() < 1) {
         throw runtime_error("Print statement has no argument.");
     }
 
     string varName = node.children[0].value;
-    string varValue = evaluateExpression(node.children[1]);
-    ASTNode expressionNode = node.children[0];
+    string varValue = evaluateExpression(node.children[0]);
 
-    if (expressionNode.type == "INTEGER") {
+    // Print based on variable type
+    if (intVariables.count(varName)) {
         cout << intVariables[varName] << endl;
-    } else if (expressionNode.type == "FLOAT") {
+    } else if (floatVariables.count(varName)) {
         cout << floatVariables[varName] << endl;
-    } else if (expressionNode.type == "STRING") {
+    } else if (stringVariables.count(varName)) {
         cout << stringVariables[varName] << endl;
-    } else if (expressionNode.type == "BOOL") {
+    } else if (boolVariables.count(varName)) {
         cout << (boolVariables[varName] ? "True" : "False") << endl;
-    } else if (expressionNode.type == "ARITHMETIC_OPERATOR") {
-        cout << evaluateIntegerExpression(expressionNode) << endl;
     } else {
-        throw runtime_error("Unsupported print statement.");
+        cerr << "Error: Undefined variable - " << varName << endl;
     }
+}
+
+string Evaluator::evaluateExpression(const ASTNode &node) {
+    if (node.type == "NUMBER" || node.type == "STRING" || node.type == "IDENTIFIER") {
+        return node.value;
+    }
+    throw runtime_error("Invalid expression.");
 }
 
 int Evaluator::evaluateIntegerExpression(const ASTNode &node) {
     if (node.type == "INTEGER") {
         return stoi(node.value);
     }
+
     if (node.children.size() == 2) {
         int left = evaluateIntegerExpression(node.children[0]);
         int right = evaluateIntegerExpression(node.children[1]);
@@ -80,8 +86,7 @@ int Evaluator::evaluateIntegerExpression(const ASTNode &node) {
         } else if (node.value == "*") {
             return left * right;
         } else if (node.value == "/") {
-            if (right == 0)
-                throw runtime_error("Division by zero.");
+            if (right == 0) throw runtime_error("Division by zero.");
             return left / right;
         } else if (node.value == "%") {
             return left % right;
@@ -95,13 +100,6 @@ double Evaluator::evaluateFloatExpression(const ASTNode &node) {
         return stod(node.value);
     }
     throw runtime_error("Invalid float expression.");
-}
-
-string Evaluator::evaluateExpression(const ASTNode &node) {
-    if (node.type == "NUMBER" || node.type == "STRING" || node.type == "IDENTIFIER") {
-        return node.value;
-    }
-    throw runtime_error("Invalid expression.");
 }
 
 string Evaluator::evaluateStringExpression(const ASTNode &node) {
