@@ -2,102 +2,151 @@
 
 void Evaluator::evaluate(const ASTNode &node)
 {
-    if (node.type == "PROGRAM")
+    if (node.type == "ASSIGNMENT")
+    {
+        handleAssignment(node);
+    }
+    else if (node.type == "PRINT")
+    {
+        handlePrint(node);
+    }
+    else
     {
         for (const auto &child : node.children)
         {
             evaluate(child);
         }
     }
-    else if (node.type == "ASSIGNMENT")
-    {
-        evaluateAssignment(node);
-    }
-    else if (node.type == "PRINT")
-    {
-        evaluatePrint(node);
-    }
-    else
-    {
-        cerr << "Unknown node type: " << node.type << endl;
-    }
 }
 
-void Evaluator::evaluateAssignment(const ASTNode &node)
+void Evaluator::handleAssignment(const ASTNode &node)
 {
     if (node.children.size() < 2)
     {
-        cerr << "Invalid assignment statement" << endl;
-        return;
+        throw runtime_error("Invalid assignment statement.");
     }
 
     string varName = node.children[0].value;
-    string varValue = evaluateExpression(node.children[1]);
+    ASTNode expressionNode = node.children[1];
 
-    // Check and store in the appropriate table
-    try
+    if (expressionNode.type == "INTEGER")
     {
-        intTable[varName] = stoi(varValue);
+        intVariables[varName] = stoi(expressionNode.value);
     }
-    catch (...)
+    else if (expressionNode.type == "FLOAT")
     {
-        try
-        {
-            doubleTable[varName] = stod(varValue);
-        }
-        catch (...)
-        {
-            if (varValue == "True" || varValue == "False")
-            {
-                boolTable[varName] = (varValue == "True");
-            }
-            else if (varValue.length() == 1)
-            {
-                charTable[varName] = varValue[0];
-            }
-            else
-            {
-                stringTable[varName] = varValue;
-            }
-        }
+        floatVariables[varName] = stod(expressionNode.value);
+    }
+    else if (expressionNode.type == "STRING")
+    {
+        stringVariables[varName] = expressionNode.value;
+    }
+    else if (expressionNode.type == "BOOL")
+    {
+        boolVariables[varName] = (expressionNode.value == "True");
+    }
+    else if (expressionNode.type == "ARITHMETIC_OPERATOR")
+    {
+        int result = evaluateIntegerExpression(expressionNode);
+        intVariables[varName] = result;
+    }
+    else
+    {
+        throw runtime_error("Unsupported assignment type.");
     }
 }
 
-void Evaluator::evaluatePrint(const ASTNode &node)
+void Evaluator::handlePrint(const ASTNode &node)
 {
     if (node.children.empty())
     {
-        cerr << "Invalid print statement" << endl;
-        return;
+        throw runtime_error("Print statement has no argument.");
     }
 
-    string varName = node.children[0].value;
+    ASTNode expressionNode = node.children[0];
 
-    if (intTable.count(varName))
-        cout << intTable[varName] << endl;
-    else if (doubleTable.count(varName))
-        cout << doubleTable[varName] << endl;
-    else if (stringTable.count(varName))
-        cout << stringTable[varName] << endl;
-    else if (charTable.count(varName))
-        cout << charTable[varName] << endl;
-    else if (boolTable.count(varName))
-        cout << (boolTable[varName] ? "True" : "False") << endl;
+    if (expressionNode.type == "INTEGER")
+    {
+        cout << stoi(expressionNode.value) << endl;
+    }
+    else if (expressionNode.type == "FLOAT")
+    {
+        cout << stod(expressionNode.value) << endl;
+    }
+    else if (expressionNode.type == "STRING")
+    {
+        cout << expressionNode.value << endl;
+    }
+    else if (expressionNode.type == "BOOL")
+    {
+        cout << (expressionNode.value == "True" ? "True" : "False") << endl;
+    }
+    else if (expressionNode.type == "ARITHMETIC_OPERATOR")
+    {
+        cout << evaluateIntegerExpression(expressionNode) << endl;
+    }
     else
-        cerr << "Error: Undefined variable - " << varName << endl;
+    {
+        throw runtime_error("Unsupported print statement.");
+    }
 }
 
-string Evaluator::evaluateExpression(const ASTNode &node)
+int Evaluator::evaluateIntegerExpression(const ASTNode &node)
 {
-    if (node.type == "NUMBER")
-        return node.value;
-    if (node.type == "STRING" || node.type == "IDENTIFIER")
-        return node.value;
-    if (node.type == "CHAR")
-        return string(1, node.value[0]);
-    if (node.type == "BOOL")
-        return node.value;
+    if (node.type == "INTEGER")
+    {
+        return stoi(node.value);
+    }
+    if (node.children.size() == 2)
+    {
+        int left = evaluateIntegerExpression(node.children[0]);
+        int right = evaluateIntegerExpression(node.children[1]);
 
-    cerr << "Error: Unrecognized expression type - " << node.type << endl;
-    return "";
+        if (node.type == "ARITHMETIC_OPERATOR")
+        {
+            string op = node.value;
+            if (op == "+")
+                return left + right;
+            if (op == "-")
+                return left - right;
+            if (op == "*")
+                return left * right;
+            if (op == "/")
+            {
+                if (right == 0)
+                    throw runtime_error("Division by zero.");
+                return left / right;
+            }
+            if (op == "%")
+                return left % right;
+        }
+    }
+    throw runtime_error("Invalid arithmetic expression.");
+}
+
+double Evaluator::evaluateFloatExpression(const ASTNode &node)
+{
+    if (node.type == "FLOAT")
+    {
+        return stod(node.value);
+    }
+    throw runtime_error("Invalid float expression.");
+}
+
+string Evaluator::evaluateStringExpression(const ASTNode &node)
+{
+    if (node.type == "STRING")
+    {
+        return node.value;
+    }
+    throw runtime_error("Invalid string expression.");
+}
+
+bool Evaluator::evaluateBooleanExpression(const ASTNode &node)
+{
+    if (node.type == "BOOL")
+    {
+        return node.value == "True";
+    }
+    throw runtime_error("Invalid boolean expression.");
 }
