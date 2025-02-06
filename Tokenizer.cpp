@@ -64,7 +64,14 @@ vector<Token> Tokenizer::tokenize(string &input)
 
                 if (key != "WHITESPACE")
                 {
-                    tokens.emplace_back(key, match[i + 1].str());
+                    if(key == "STRING" || key == "CHAR"){
+                        string str = match[i + 1];
+                        string string_text = str.substr(1,str.length()-2);
+                        tokens.emplace_back(key,string_text);
+                    }
+                    else{
+                        tokens.emplace_back(key, match[i + 1].str());
+                    }
                 }
             }
         }
