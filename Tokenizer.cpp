@@ -15,9 +15,12 @@ vector<Token> Tokenizer::tokenize(string &input)
         {"WHILE", R"(\bwhile\b)"},
         {"LINE_BREAK", R"(\\n)"},
         {"BOOL", R"(\b(?:True|False|bool)\b)"},
+        {"DOUBLE", R"(\b(?:double|\d+\.\d{8,})\b)"},
+        {"DOUBLE", R"([+-]\d+\.\d{8,})"},
         {"FLOAT", R"(\b(?:float|\d+\.\d{1,7})\b)"},
-        {"DOUBLE", R"(\b\d+\.\d{8,}\b)"},
+        {"FLOAT", R"([+-]\d+\.\d{1,7})"},
         {"INTEGER", R"(\b(?:int|\d+)\b)"},
+        {"INTEGER", R"([+-]\d+)"},
         {"STRING", R"("[^"]*")"},
         {"CHAR", R"('[^']')"},
         {"COMPARISON_OPERATOR", R"(==|!=|<=|>=|<|>)"},
@@ -61,7 +64,16 @@ vector<Token> Tokenizer::tokenize(string &input)
 
                 if (key != "WHITESPACE")
                 {
-                    tokens.emplace_back(key, match[i + 1].str());
+                    if (key == "STRING" || key == "CHAR")
+                    {
+                        string str = match[i + 1];
+                        string string_text = str.substr(1, str.length() - 2);
+                        tokens.emplace_back(key, string_text);
+                    }
+                    else
+                    {
+                        tokens.emplace_back(key, match[i + 1].str());
+                    }
                 }
             }
         }
