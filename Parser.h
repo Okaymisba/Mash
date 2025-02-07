@@ -30,6 +30,8 @@ private:
 
     ASTNode parseIfStatement();
 
+    ASTNode parseWhileLoop();
+
     ASTNode parseCondition();
 
     ASTNode parseBody();

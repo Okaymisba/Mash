@@ -145,6 +145,27 @@ ASTNode Parser::parseIfStatement()
 }
 
 /**
+ * Parses a while loop statement and returns an Abstract Syntax Tree node.
+ *
+ * This function parses a while loop, which consists of a condition and a body.
+ * It constructs an AST node with the type "WHILE" and adds the parsed condition
+ * and body as its children. The condition is parsed by calling the parseCondition()
+ * function, and the body is parsed by calling the parseBody() function.
+ *
+ * @return An Abstract Syntax Tree node representing the while loop statement.
+ */
+ASTNode Parser::parseWhileLoop()
+{
+    consume("WHILE");
+    ASTNode whileNode("WHILE");
+    ASTNode condition = parseCondition();
+    whileNode.children.push_back(condition);
+    ASTNode body = parseBody();
+    whileNode.children.push_back(body);
+    return whileNode;
+}
+
+/**
  * Parses the tokens from the token stream and returns an Abstract Syntax Tree node.
  *
  * This function determines the type of statement based on the current token and
@@ -170,6 +191,10 @@ ASTNode Parser::parseStatement()
     else if (token.type == "CHECK_IF")
     {
         return parseIfStatement();
+    }
+    else if (token.type == "WHILE")
+    {
+        return parseWhileLoop();
     }
     else
     {
