@@ -19,21 +19,15 @@ private:
     size_t currentIndex;
 
     Token peek();
-
     Token consume(const string &expectedType);
 
     ASTNode parseExpression();
-
+    ASTNode parseTerm();  // Added missing declaration
     ASTNode parseAssignment();
-
     ASTNode parsePrintStatement();
-
     ASTNode parseIfStatement();
-
     ASTNode parseCondition();
-
     ASTNode parseBody();
-
     ASTNode parseStatement();
 };
 

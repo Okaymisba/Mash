@@ -24,23 +24,61 @@ ASTNode Parser::parse()
         }
     }
     return root;
-};
+}
 
 ASTNode Parser::parseAssignment()
 {
     Token identifier = consume("IDENTIFIER");
     consume("ASSIGN");
+    
     ASTNode assignment("ASSIGNMENT");
     assignment.children.push_back(ASTNode("IDENTIFIER", identifier.value));
 
-    while (peek().type != "SEMICOLON")
-    {
-        ASTNode value = parseExpression();
-        assignment.children.push_back(value);
-    }
+    // Wrap arithmetic expressions inside an EXPRESSION node
+    ASTNode expressionNode = parseExpression();
+    assignment.children.push_back(expressionNode);
+
     consume("SEMICOLON");
     consume("LINE_BREAK");
+    
     return assignment;
+}
+
+ASTNode Parser::parseExpression()
+{
+    ASTNode left = parseTerm();
+
+    while (peek().type == "ARITHMETIC_OPERATOR")
+    {
+        Token op = consume("ARITHMETIC_OPERATOR");
+        ASTNode right = parseTerm();
+
+        ASTNode expr("EXPRESSION");
+        expr.children.push_back(left);
+        expr.children.push_back(ASTNode("ARITHMETIC_OPERATOR", op.value));
+        expr.children.push_back(right);
+
+        left = expr;
+    }
+
+    return left;
+}
+
+ASTNode Parser::parseTerm()
+{
+    Token token = peek();
+    if (token.type == "INTEGER" || token.type == "FLOAT" || token.type == "DOUBLE")
+    {
+        return ASTNode(token.type, consume(token.type).value);
+    }
+    else if (token.type == "IDENTIFIER")
+    {
+        return ASTNode("IDENTIFIER", consume("IDENTIFIER").value);
+    }
+    else
+    {
+        throw runtime_error("Unexpected token in expression: " + token.value);
+    }
 }
 
 ASTNode Parser::parsePrintStatement()
@@ -48,11 +86,13 @@ ASTNode Parser::parsePrintStatement()
     consume("PRINT");
     consume("OPEN_ROUND_BRACKET");
     ASTNode printNode("PRINT");
+
     while (peek().type != "CLOSE_ROUND_BRACKET")
     {
         ASTNode expression = parseExpression();
         printNode.children.push_back(expression);
     }
+
     consume("CLOSE_ROUND_BRACKET");
     if (peek().type == "SEMICOLON")
     {
