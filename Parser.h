@@ -26,6 +26,7 @@ private:
     ASTNode parseAssignment();
     ASTNode parsePrintStatement();
     ASTNode parseIfStatement();
+    ASTNode parseWhileLoop();
     ASTNode parseCondition();
     ASTNode parseBody();
     ASTNode parseStatement();

@@ -1,6 +1,15 @@
 #include "../../Parser.h"
 #include <stdexcept>
 
+/**
+ * @return An AST node representing the expression
+ *
+ * @details
+ * This function parses an expression, which is either a literal (e.g. a number, string, etc), an expression enclosed in parentheses, or an identifier.
+ * If the next token is an OPEN_ROUND_BRACKET token, it will consume the token and parse the expression inside the parentheses.
+ * If the next token is not an OPEN_ROUND_BRACKET token, it will consume the token and return an AST node with the type and value of the token.
+ * If an unexpected token is encountered, a runtime error will be thrown.
+ */
 ASTNode Parser::parseExpression()
 {
     Token token = peek();

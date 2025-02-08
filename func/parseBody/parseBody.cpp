@@ -1,5 +1,17 @@
 #include "../../Parser.h"
 
+/**
+ * @return An AST node representing the body of a block
+ *
+ * @details
+ * This function parses a block of statements enclosed within curly brackets.
+ * It first consumes any leading line breaks and the opening curly bracket.
+ * Then, it continues to parse and add statements as children to an AST node
+ * of type BODY, skipping over any line breaks, until it encounters a closing
+ * curly bracket. Finally, it consumes the closing curly bracket and returns
+ * the constructed BODY node.
+ */
+
 ASTNode Parser::parseBody()
 {
     while (peek().type == "LINE_BREAK")
