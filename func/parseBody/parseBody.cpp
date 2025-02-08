@@ -37,5 +37,10 @@ ASTNode Parser::parseBody()
 
     consume("CLOSE_CURLY_BRACKET");
 
+    while (peek().type == "LINE_BREAK")
+    {
+        consume("LINE_BREAK");
+    }
+
     return body;
 }
