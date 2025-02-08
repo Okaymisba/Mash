@@ -21,7 +21,7 @@ ASTNode Parser::parseExpression()
     while (peek().type == "ARITHMETIC_OPERATOR")
     {
         Token op = consume("ARITHMETIC_OPERATOR");
-        ASTNode right = parseTerm();
+        ASTNode right = parseRight();
 
         ASTNode expr("EXPRESSION");
         expr.children.push_back(left);
