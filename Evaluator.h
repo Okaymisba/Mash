@@ -1,28 +1,37 @@
 #ifndef EVALUATOR_H
 #define EVALUATOR_H
 
-#include <iostream>
-#include <unordered_map>
-#include <string>
 #include "structs/ASTNode.h"
+#include <string>
+#include <map>
+#include <stdexcept>
 
 using namespace std;
 
 class Evaluator
 {
 public:
+    Evaluator();
+
     void evaluate(const ASTNode &node);
 
 private:
-    unordered_map<string, int> intTable;
-    unordered_map<string, double> doubleTable;
-    unordered_map<string, string> stringTable;
-    unordered_map<string, char> charTable;
-    unordered_map<string, bool> boolTable;
+    map<string, int> intVariables;
+    map<string, float> floatVariables;
+    map<string, double> doubleVariables;
+    map<string, bool> boolVariables;
+    map<string, string> stringVariables;
 
-    void evaluateAssignment(const ASTNode &node);
-    void evaluatePrint(const ASTNode &node);
     string evaluateExpression(const ASTNode &node);
+    string evaluateAssignment(const ASTNode &node);
+    string evaluatePrint(const ASTNode &node);
+    string evaluateIfStatement(const ASTNode &node);
+    string evaluateCondition(const ASTNode &node);
+    string evaluateBody(const ASTNode &node);
+
+    string performArithmetic(const string &left, const string &right, const string &op);
+    string getVariableValue(const string &identifier);
+    void setVariableValue(const string &identifier, const string &value, const string &type);
 };
 
 #endif

@@ -24,11 +24,17 @@ private:
 
     ASTNode parseExpression();
 
+    ASTNode parseTerm();
+
+    ASTNode parseRight();
+
     ASTNode parseAssignment();
 
     ASTNode parsePrintStatement();
 
     ASTNode parseIfStatement();
+
+    ASTNode parseWhileLoop();
 
     ASTNode parseCondition();
 
