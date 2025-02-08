@@ -2,47 +2,34 @@
 #include <stdexcept>
 
 /**
- * @return An AST node representing the expression
+ * Parses an arithmetic expression and returns an Abstract Syntax Tree node.
  *
- * @details
- * This function parses an expression, which is either a literal (e.g. a number, string, etc), an expression enclosed in parentheses, or an identifier.
- * If the next token is an OPEN_ROUND_BRACKET token, it will consume the token and parse the expression inside the parentheses.
- * If the next token is not an OPEN_ROUND_BRACKET token, it will consume the token and return an AST node with the type and value of the token.
- * If an unexpected token is encountered, a runtime error will be thrown.
+ * This function parses an expression, which is a sequence of terms separated
+ * by arithmetic operators. It first parses a term as the left operand, then
+ * continues to parse an operator and a term as the right operand, wrapping the
+ * parsed operators and operands in an AST node of type EXPRESSION. The
+ * expression is parsed until it encounters a token that is not an arithmetic
+ * operator, at which point it returns the parsed expression.
+ *
+ * @return An Abstract Syntax Tree node representing the parsed expression.
  */
+
 ASTNode Parser::parseExpression()
 {
-    Token token = peek();
+    ASTNode left = parseTerm();
 
-    if (token.type == "OPEN_ROUND_BRACKET")
+    while (peek().type == "ARITHMETIC_OPERATOR")
     {
-        if (token.type == "OPEN_ROUND_BRACKET")
-        {
-            consume("OPEN_ROUND_BRACKET");
-        }
+        Token op = consume("ARITHMETIC_OPERATOR");
+        ASTNode right = parseTerm();
 
-        ASTNode literal("EXPRESSION");
+        ASTNode expr("EXPRESSION");
+        expr.children.push_back(left);
+        expr.children.push_back(ASTNode("ARITHMETIC_OPERATOR", op.value));
+        expr.children.push_back(right);
 
-        while (peek().type != "CLOSE_ROUND_BRACKET")
-        {
-            ASTNode expression = parseExpression();
-            literal.children.push_back(expression);
-        }
-
-        consume("CLOSE_ROUND_BRACKET");
-
-        return literal;
+        left = expr;
     }
 
-    else if (token.type == "IDENTIFIER" || token.type == "INTEGER" || token.type == "ARITHMETIC_OPERATOR" || token.type == "STRING" || token.type == "CHAR" || token.type == "BOOL" || token.type == "DOUBLE" || token.type == "FLOAT")
-    {
-        consume(token.type);
-        ASTNode node(token.type, token.value);
-        return node;
-    }
-
-    else
-    {
-        throw runtime_error("Syntax error: Unexpected Token: '" + token.type + "'");
-    }
+    return left;
 }

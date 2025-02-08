@@ -9,6 +9,7 @@
  * The parsed tokens will be added as children to an AST node with the type CONDITION.
  * The node will be returned at the end of the function.
  */
+
 ASTNode Parser::parseCondition()
 {
     ASTNode condition("CONDITION");
