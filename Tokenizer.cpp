@@ -64,9 +64,9 @@ vector<Token> Tokenizer::tokenize(string &input)
 
                 if (key != "WHITESPACE")
                 {
-                    if (key == "STRING" || key == "CHAR")
+                    if (key == "STRING" || key == "CHAR")   //This will exclude inverted commas from STRING and CHAR and will only extract the text between them
                     {
-                        string str = match[i + 1];
+                        string str = match[i + 1];   
                         string string_text = str.substr(1, str.length() - 2);
                         tokens.emplace_back(key, string_text);
                     }
