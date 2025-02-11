@@ -20,9 +20,16 @@ void printAST(const ASTNode &node, int indent = 0)
     }
 }
 
-int main()
+int main(int argc, char *argv[])
 {
-    string filePath = "SourceCode.txt";
+    if (argc < 2)
+    {
+        cerr << "Usage: ./mash <script.mash>" << endl;
+
+        return 1;
+    }
+
+    string filePath = argv[1];
     string code = readFile(filePath);
     cout << code << endl;
 
