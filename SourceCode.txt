@@ -1,8 +1,0 @@
-X = True;
-check if (x != False){
-    print(x);
-} else if (x == True ){
-    print(y)
-} else {
-    print(z)
-};
