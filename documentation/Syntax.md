@@ -7,7 +7,7 @@ y = 5;
 ```
 
 ## 2. Arithmetic Expressions
-Mash supports basic arithmetic operations:
+Mash supports arithmetic operations:
 ```
 a = 10 + 5;      # Addition
 b = 10 - 3;      # Subtraction
