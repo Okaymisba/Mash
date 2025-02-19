@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
 {
     if (argc < 2)
     {
-        cerr << "Usage: ./mash <script.msh>" << endl;
+        cerr << "Usage: mash <script.msh>" << endl;
 
         return 1;
     }

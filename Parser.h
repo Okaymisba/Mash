@@ -22,11 +22,11 @@ private:
 
     Token consume(const string &expectedType);
 
-    ASTNode parseExpression();
+    int getPrecedence(const string &op);
+
+    ASTNode parseExpression(int minimumPrecedence = 0);
 
     ASTNode parseTerm();
-
-    ASTNode parseRight();
 
     ASTNode parseAssignment();
 
