@@ -14,18 +14,28 @@
  * @return An Abstract Syntax Tree node representing the parsed expression.
  */
 
-ASTNode Parser::parseExpression()
+ASTNode Parser::parseExpression(int minPrecedence)
 {
     ASTNode left = parseTerm();
 
-    while (peek().type == "ARITHMETIC_OPERATOR")
+    while (true)
     {
-        Token op = consume("ARITHMETIC_OPERATOR");
-        ASTNode right = parseRight();
+        Token opToken = peek();
+        string op = opToken.value;
+        int precedence = getPrecedence(op);
+
+        if (opToken.type != "ARITHMETIC_OPERATOR" || precedence < minPrecedence)
+        {
+            break;
+        }
+
+        consume("ARITHMETIC_OPERATOR");
+
+        ASTNode right = parseExpression(precedence + 1);
 
         ASTNode expr("EXPRESSION");
         expr.children.push_back(left);
-        expr.children.push_back(ASTNode("ARITHMETIC_OPERATOR", op.value));
+        expr.children.push_back(ASTNode("ARITHMETIC_OPERATOR", op));
         expr.children.push_back(right);
 
         left = expr;

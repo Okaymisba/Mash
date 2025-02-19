@@ -27,7 +27,7 @@ ASTNode Parser::parse()
         }
         else
         {
-            ASTNode statement = parseStatement();
+            ASTNode statement = parseStatement(); // parseStatement() at Line 187
             root.children.push_back(statement);
             if (peek().type == "SEMICOLON")
             {
@@ -58,8 +58,8 @@ ASTNode Parser::parseAssignment()
     ASTNode assignment("ASSIGNMENT");
     assignment.children.push_back(ASTNode("IDENTIFIER", identifier.value));
 
-    // Wrap arithmetic expressions inside an EXPRESSION node
-    ASTNode expressionNode = parseExpression();
+    // Wraping arithmetic expressions inside an EXPRESSION node
+    ASTNode expressionNode = parseExpression(); // parseExpression() in func/parseExpression/parseExpression.cpp
     assignment.children.push_back(expressionNode);
 
     consume("SEMICOLON");
@@ -88,7 +88,7 @@ ASTNode Parser::parsePrintStatement()
 
     while (peek().type != "CLOSE_ROUND_BRACKET")
     {
-        ASTNode expression = parseExpression();
+        ASTNode expression = parseExpression(); // parseExpression() in func/parseExpression/parseExpression.cpp
         printNode.children.push_back(expression);
     }
 
@@ -121,9 +121,9 @@ ASTNode Parser::parseIfStatement()
     ASTNode ifStatement("IF STATEMENT");
 
     ASTNode ifNode("IF");
-    ASTNode condition = parseCondition();
+    ASTNode condition = parseCondition(); // parseCondition() in func/parseCondition/parseCondition.cpp
     ifNode.children.push_back(condition);
-    ASTNode body = parseBody();
+    ASTNode body = parseBody(); // parseBody() in func/parseBody/parseBody.cpp
     ifNode.children.push_back(body);
     ifStatement.children.push_back(ifNode);
 
@@ -131,9 +131,9 @@ ASTNode Parser::parseIfStatement()
     {
         consume("ELSE IF");
         ASTNode elseIfNode("ELSE IF");
-        ASTNode condition = parseCondition();
+        ASTNode condition = parseCondition(); // parseCondition() in func/parseCondition/parseCondition.cpp
         elseIfNode.children.push_back(condition);
-        ASTNode body = parseBody();
+        ASTNode body = parseBody(); // parseBody() in func/parseBody/parseBody.cpp
         elseIfNode.children.push_back(body);
         ifStatement.children.push_back(elseIfNode);
     }
@@ -142,7 +142,7 @@ ASTNode Parser::parseIfStatement()
     {
         consume("ELSE");
         ASTNode elseNode("ELSE");
-        ASTNode body = parseBody();
+        ASTNode body = parseBody(); // parseBody() in func/parseBody/parseBody.cpp
         elseNode.children.push_back(body);
         ifStatement.children.push_back(elseNode);
     }
@@ -165,9 +165,9 @@ ASTNode Parser::parseWhileLoop()
 {
     consume("WHILE");
     ASTNode whileNode("WHILE");
-    ASTNode condition = parseCondition();
+    ASTNode condition = parseCondition(); // parseCondition() in func/parseCondition/parseCondition.cpp
     whileNode.children.push_back(condition);
-    ASTNode body = parseBody();
+    ASTNode body = parseBody(); // parseBody() in func/parseBody/parseBody.cpp
     whileNode.children.push_back(body);
     return whileNode;
 }
@@ -189,19 +189,19 @@ ASTNode Parser::parseStatement()
     Token token = peek();
     if (token.type == "PRINT")
     {
-        return parsePrintStatement();
+        return parsePrintStatement(); // parsePrintStatement() at line 83
     }
     else if (token.type == "IDENTIFIER")
     {
-        return parseAssignment();
+        return parseAssignment(); // parseAssignment() at line 53
     }
     else if (token.type == "CHECK_IF")
     {
-        return parseIfStatement();
+        return parseIfStatement(); // parseIfStatement() at line 118
     }
     else if (token.type == "WHILE")
     {
-        return parseWhileLoop();
+        return parseWhileLoop(); // parseWhileLoop() at line 164
     }
     else
     {
