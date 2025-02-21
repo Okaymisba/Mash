@@ -11,8 +11,6 @@ using namespace std;
 class Evaluator
 {
 public:
-    Evaluator();
-
     void evaluate(const ASTNode &node);
 
 private:
