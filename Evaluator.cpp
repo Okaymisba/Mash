@@ -5,11 +5,6 @@
 
 using namespace std;
 
-Evaluator::Evaluator()
-{
-    // Initialize any default variables or state here if needed
-}
-
 void Evaluator::evaluate(const ASTNode &node)
 {
     if (node.type == "PROGRAM")
@@ -262,7 +257,7 @@ void Evaluator::setVariableValue(const string &identifier, const string &value, 
     {
         floatVariables[identifier] = stof(value);
     }
-    else if (type == "DOUBLE")
+    else if (type == "DOUBLE")\
     {
         doubleVariables[identifier] = stod(value);
     }
