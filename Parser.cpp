@@ -27,7 +27,7 @@ ASTNode Parser::parse()
         }
         else
         {
-            ASTNode statement = parseStatement(); // parseStatement() at Line 187
+            ASTNode statement = parseStatement(); // parseStatement() in Parcer.cpp
             root.children.push_back(statement);
             if (peek().type == "SEMICOLON")
             {
@@ -189,19 +189,19 @@ ASTNode Parser::parseStatement()
     Token token = peek();
     if (token.type == "PRINT")
     {
-        return parsePrintStatement(); // parsePrintStatement() at line 83
+        return parsePrintStatement(); // parsePrintStatement() in Parser.cpp
     }
     else if (token.type == "IDENTIFIER")
     {
-        return parseAssignment(); // parseAssignment() at line 53
+        return parseAssignment(); // parseAssignment() in Parser.cpp
     }
     else if (token.type == "CHECK_IF")
     {
-        return parseIfStatement(); // parseIfStatement() at line 118
+        return parseIfStatement(); // parseIfStatement() in Parser.cpp
     }
     else if (token.type == "WHILE")
     {
-        return parseWhileLoop(); // parseWhileLoop() at line 164
+        return parseWhileLoop(); // parseWhileLoop() in Parser.cpp
     }
     else
     {
