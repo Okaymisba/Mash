@@ -24,7 +24,7 @@ void Evaluator::evaluate(const ASTNode &node)
     }
     else if (node.type == "IF STATEMENT")
     {
-        evaluateIfStatement(node);
+        evaluateIfStatement(node.children[0]);
     }
     else
     {
@@ -73,6 +73,7 @@ string Evaluator::evaluatePrint(const ASTNode &node)
 
 string Evaluator::evaluateIfStatement(const ASTNode &node)
 {
+
     if (node.children.size() < 2)
     {
         throw runtime_error("Invalid IF STATEMENT: expected condition and body");
