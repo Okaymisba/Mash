@@ -7,7 +7,7 @@ Mash is a lightweight, general-purpose, interpreted programming language designe
 
 ### 🔹 Download Mash
 Mash is available for Linux and Windows. You can download the latest version from the GitHub Releases page:
-👉 [Mash Releases](https://github.com/Okaymisba/Mash/releases/tag/v1.0.0)
+👉 [Mash Releases](https://github.com/Okaymisba/Mash/releases/tag/v1.0.1)
 
 
 
