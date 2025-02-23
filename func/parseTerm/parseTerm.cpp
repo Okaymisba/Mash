@@ -13,6 +13,15 @@
 ASTNode Parser::parseTerm()
 {
     Token token = peek();
+
+    if (token.type == "OPEN_ROUND_BRACKET")
+    {
+        consume("OPEN_ROUND_BRACKET");
+        ASTNode expr = parseExpression();
+        consume("CLOSE_ROUND_BRACKET");
+        return expr;
+    }
+
     if (token.type == "INTEGER" || token.type == "FLOAT" || token.type == "DOUBLE" || token.type == "STRING" || token.type == "BOOL" || token.type == "CHAR")
     {
         return ASTNode(token.type, consume(token.type).value);
