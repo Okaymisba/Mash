@@ -1,5 +1,15 @@
 #include "../../Evaluator.h"
 
+/**
+ * Retrieves the value of a variable as a string.
+ * The variable type is determined by searching each of the type-specific maps.
+ * If the variable is not found in any of the maps, a runtime error is thrown.
+ *
+ * @param identifier The variable name to retrieve.
+ * @return The value of the variable as a string.
+ * @throws runtime_error If the variable is not found.
+ */
+
 string Evaluator::getVariableValue(const string &identifier)
 {
     if (intVariables.find(identifier) != intVariables.end())
