@@ -65,7 +65,7 @@ string Evaluator::evaluatePrint(const ASTNode &node)
 {
     for (const auto &child : node.children)
     {
-        string value = evaluateExpression(child);
+        string value = evaluateExpressionForPrint(child);
         cout << value << endl;
     }
     return "";
