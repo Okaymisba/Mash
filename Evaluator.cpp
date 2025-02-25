@@ -65,9 +65,29 @@ string Evaluator::evaluatePrint(const ASTNode &node)
 {
     for (const auto &child : node.children)
     {
-        string value = evaluateExpressionForPrint(child);
-        cout << value << endl;
+        if (child.type == "NUMBER" || child.type == "INTEGER" || child.type == "FLOAT" || child.type == "DOUBLE")
+        {
+            cout << child.value;
+        }
+        else if (child.type == "IDENTIFIER")
+        {
+            cout << getVariableValue(child.value);
+        }
+        else if (child.type == "EXPRESSION")
+        {
+            cout << evaluateExpression(child);
+        }
+        else if (child.type == "STRING")
+        {
+            cout << child.value;
+        }
+        else
+        {
+            throw runtime_error("Unsupported expression type: " + node.type);
+        }
     }
+    
+    cout << endl;
     return "";
 }
 
