@@ -5,6 +5,14 @@
 
 using namespace std;
 
+/**
+ * Evaluates an Abstract Syntax Tree node.
+ *
+ * This function evaluates an Abstract Syntax Tree node by checking its type and
+ * delegating the evaluation to the appropriate specific evaluation function.
+ * If the node type is not recognized, a runtime error is thrown.
+ */
+
 void Evaluator::evaluate(const ASTNode &node)
 {
     if (node.type == "PROGRAM")
@@ -31,6 +39,19 @@ void Evaluator::evaluate(const ASTNode &node)
         throw runtime_error("Unknown node type: " + node.type);
     }
 }
+
+/**
+ * Evaluates an assignment statement by setting the value of a variable.
+ *
+ * This function evaluates an assignment statement by extracting the identifier
+ * and value from the Abstract Syntax Tree node and setting the value of the
+ * variable using the appropriate type-specific map. The variable type is
+ * determined by examining the value string.
+ *
+ * @param node The Abstract Syntax Tree node representing the assignment statement.
+ * @return An empty string.
+ * @throws runtime_error If the assignment node does not have exactly two children.
+ */
 
 string Evaluator::evaluateAssignment(const ASTNode &node)
 {
@@ -68,6 +89,19 @@ string Evaluator::evaluateAssignment(const ASTNode &node)
 
     return "";
 }
+
+/**
+ * Evaluates a print statement and outputs the result.
+ *
+ * This function iterates through the children of the given AST node
+ * and evaluates each child based on its type. The evaluated result is printed to the standard output.
+ * If an unsupported expression type is encountered, a runtime error
+ * is thrown.
+ *
+ * @param node The Abstract Syntax Tree node representing the print statement.
+ * @return An empty string.
+ * @throws runtime_error If an unsupported expression type is encountered.
+ */
 
 string Evaluator::evaluatePrint(const ASTNode &node)
 {
