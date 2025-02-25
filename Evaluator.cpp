@@ -40,25 +40,33 @@ string Evaluator::evaluateAssignment(const ASTNode &node)
     }
 
     string identifier = node.children[0].value;
-    string value = evaluateExpression(node.children[1]);
 
-    if (value.find('.') != string::npos)
+    if (node.children[1].type == "STRING")
     {
-        if (value.size() > 8)
-        {
-            setVariableValue(identifier, value, "DOUBLE");
-        }
-        else
-        {
-            setVariableValue(identifier, value, "FLOAT");
-        }
+        setVariableValue(identifier, node.children[1].value, "STRING");
     }
     else
     {
-        setVariableValue(identifier, value, "INTEGER");
+        string value = evaluateExpression(node.children[1]);
+
+        if (value.find('.') != string::npos)
+        {
+            if (value.size() > 8)
+            {
+                setVariableValue(identifier, value, "DOUBLE");
+            }
+            else
+            {
+                setVariableValue(identifier, value, "FLOAT");
+            }
+        }
+        else
+        {
+            setVariableValue(identifier, value, "INTEGER");
+        }
     }
 
-    return value;
+    return "";
 }
 
 string Evaluator::evaluatePrint(const ASTNode &node)
@@ -86,7 +94,7 @@ string Evaluator::evaluatePrint(const ASTNode &node)
             throw runtime_error("Unsupported expression type: " + node.type);
         }
     }
-    
+
     cout << endl;
     return "";
 }
