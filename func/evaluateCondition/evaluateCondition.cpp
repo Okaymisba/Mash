@@ -1,5 +1,19 @@
 #include "../../Evaluator.h"
 
+/**
+ * Evaluates a conditional expression represented by the given AST node.
+ *
+ * This function processes a node of type "CONDITION" by evaluating its
+ * child nodes to determine the left and right operands and the operator.
+ * Supported operators are "==", "!=", ">", "<", ">=", and "<=".
+ * The function converts the operand values to double for comparison and
+ * returns "true" or "false" as a string based on whether the condition is met.
+ *
+ * @param node The AST node representing the condition to evaluate.
+ * @return "true" if the condition is satisfied; otherwise, "false".
+ * @throws runtime_error If the node type is not "CONDITION" or the operator is unsupported.
+ */
+
 string Evaluator::evaluateCondition(const ASTNode &node)
 {
     if (node.type == "CONDITION")

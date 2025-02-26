@@ -1,5 +1,15 @@
 #include "../../Evaluator.h"
 
+/**
+ * Evaluates an expression and returns the result as a string.
+ *
+ * @param node The root node of the expression Abstract Syntax Tree
+ * @return The result of evaluating the expression as a string
+ *
+ * @throws runtime_error If the expression structure is invalid or
+ * the expression type is unsupported
+ */
+
 string Evaluator::evaluateExpression(const ASTNode &node)
 {
     if (node.type == "NUMBER" || node.type == "INTEGER" || node.type == "FLOAT" || node.type == "DOUBLE")
