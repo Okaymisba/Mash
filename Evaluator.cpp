@@ -32,7 +32,7 @@ void Evaluator::evaluate(const ASTNode &node)
     }
     else if (node.type == "IF STATEMENT")
     {
-        evaluateIfStatement(node.children[0]);
+        evaluateIfStatement(node);
     }
     else
     {
@@ -133,19 +133,24 @@ string Evaluator::evaluatePrint(const ASTNode &node)
     return "";
 }
 
-string Evaluator::evaluateIfStatement(const ASTNode &node)
+void Evaluator::evaluateIfStatement(const ASTNode &node)
 {
+    bool conditionMet = false;
 
-    if (node.children.size() < 2)
+    for (const auto &child : node.children)
     {
-        throw runtime_error("Invalid IF STATEMENT: expected condition and body");
+        if (child.type == "IF" || (child.type == "ELSE IF" && !conditionMet))
+        {
+            if (evaluateCondition(child.children[0]) == "true")
+            {
+                evaluateBody(child.children[1]);
+                conditionMet = true;
+            }
+        }
+        else if (child.type == "ELSE" && !conditionMet)
+        {
+            evaluateBody(child.children[0]);
+            conditionMet = true;
+        }
     }
-
-    string conditionResult = evaluateCondition(node.children[0]);
-    if (conditionResult == "true")
-    {
-        evaluateBody(node.children[1]);
-    }
-
-    return "";
 }
