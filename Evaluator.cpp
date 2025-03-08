@@ -66,6 +66,10 @@ string Evaluator::evaluateAssignment(const ASTNode &node)
     {
         setVariableValue(identifier, node.children[1].value, "STRING");
     }
+    else if (node.children[1].type == "BOOL")
+    {
+        setVariableValue(identifier, node.children[1].value, "BOOL");
+    }
     else
     {
         string value = evaluateExpression(node.children[1]);
