@@ -137,6 +137,17 @@ string Evaluator::evaluatePrint(const ASTNode &node)
     return "";
 }
 
+/**
+ * Evaluates an if statement by checking conditions and executing bodies.
+ *
+ * This function iterates over the children of the given AST node and evaluates
+ * the condition and body of each if and else if clause. If the condition is
+ * satisfied, the body is executed and the function returns. If none of the
+ * conditions are satisfied, the else clause is executed if present.
+ *
+ * @param node The Abstract Syntax Tree node representing the if statement.
+ */
+
 void Evaluator::evaluateIfStatement(const ASTNode &node)
 {
     bool conditionMet = false;
