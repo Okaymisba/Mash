@@ -1,73 +1,68 @@
-#include <iostream>
 #include "Tokenizer.h"
+#include <iostream>
 #include <map>
 #include <regex>
 
-vector<Token> Tokenizer::tokenize(string &input)
-{
+using namespace std;
+
+vector<Token> Tokenizer::tokenize(const string &input) {
     vector<pair<string, string>> patterns = {
-        // Symbols first (to prevent misparsing)
+        {"WHITESPACE", R"([ \t\r]+)"}, // Ignore whitespace
+        {"NEWLINE", R"(\n)"},          // Preserve line breaks
+        {"COMMENT", R"(//[^\n]*)"},    // ✅ Ignore comments (everything after //)
+        {"CHECK_IF", R"(\bcheck[ \t]+if\b)"},
+        {"ELSE_IF", R"(\belse[ \t]+if\b)"},  // ✅ ELSE_IF separately
+        {"ELSE", R"(\belse\b)"},
+        {"FOR", R"(\bfor\b)"},          // ✅ For loop
+        {"TO", R"(\bto\b)"},            // ✅ For loop range keyword
+        {"STEP", R"(\bstep\b)"},        // ✅ Step keyword for for-loops
+        {"UPTO", R"(\bupto\b)"},        // ✅ Upto range keyword
+        {"DOWNTO", R"(\bdownto\b)"},    // ✅ Downto range keyword
+        {"UPTILL", R"(\buptill\b)"},    // ✅ Uptill range keyword
+        {"DOWNTILL", R"(\bdowntill\b)"},// ✅ Downtill range keyword
+        {"DOWNUNTIL", R"(\bdownuntil\b)"}, // ✅ Downuntil range keyword
+        {"WHILE", R"(\bwhile\b)"},      // ✅ Added WHILE as separate token
+        {"PRINT", R"(\bprint\b)"},
+        {"BOOL", R"(\bTrue\b|\bFalse\b)"},
+        {"STRING", R"("(?:[^"\\]|\\.)*")"},
+        {"FLOAT", R"(\b\d+\.\d+f\b)"}, // ✅ Float with 'f' suffix
+        {"DOUBLE", R"(\b\d+\.\d+\b)"}, // ✅ Double without 'f'
+        {"INTEGER", R"(\b\d+\b)"},
+        {"COMPARISON_OPERATOR", R"(==|!=|<=|>=|<|>)"},
+        {"ASSIGN", R"(=)"},
+        {"ARITHMETIC_OPERATOR", R"([-+*/%])"},
         {"OPEN_ROUND_BRACKET", R"(\()"},
         {"CLOSE_ROUND_BRACKET", R"(\))"},
         {"OPEN_CURLY_BRACKET", R"(\{)"},
         {"CLOSE_CURLY_BRACKET", R"(\})"},
         {"SEMICOLON", R"(;)"},
-        {"COLON", R"(:)"},
-        {"DOT", R"(\.)"},
-
-        // Keywords 
-        {"FOR", R"(\bfor\b)"},
-        {"TO", R"(\bto\b)"},
-        {"CHECK_IF", R"(\bcheck\s*if\b)"},
-        {"ELSE", R"(\belse\b)"},
-        {"ELSE IF", R"(\belse\s+if\b)"},
-        {"PRINT", R"(\bprint\b)"},
-        {"WHILE", R"(\bwhile\b)"},
-        {"BOOL", R"(\b(True|False)\b)"},
-
-        // Literals
-        {"LINE_BREAK", R"(\n)"},
-        {"DOUBLE", R"(\d+\.\d{8,})"},
-        {"FLOAT", R"(\d+\.\d{1,7})"},
-        {"INTEGER", R"(\d+)"},
-        {"STRING", R"("[^"]*")"},
-        {"CHAR", R"('[^']')"},
-
-        // Operators (ordered by precedence)
-        {"ASSIGNMENT_OPERATOR", R"(\+=|\-|\/=|\*=|\%=)"},
-        {"COMPARISON_OPERATOR", R"(==|!=|<=|>=|<|>)"},
-        {"ARITHMETIC_OPERATOR", R"([+*\/%-])"},
-        {"ASSIGN", R"(=)"},
-
-        // Identifier (last)
-        {"IDENTIFIER", R"([a-zA-Z_][a-zA-Z0-9_]*)"}
+        {"IDENTIFIER", R"(\b[a-zA-Z_][a-zA-Z0-9_]*\b)"}  // ✅ No conflicts with keywords
     };
 
-    // Build regex pattern
     string regexString;
-    for (const auto& pair : patterns) {
-        if (!regexString.empty()) regexString += "|";
-        regexString += "(" + pair.second + ")";
+    for (size_t i = 0; i < patterns.size(); ++i) {
+        if (i > 0) regexString += "|";
+        regexString += "(" + patterns[i].second + ")";
     }
 
     regex regexPattern(regexString);
     smatch match;
     vector<Token> tokens;
-
     string::const_iterator searchStart(input.cbegin());
 
     while (regex_search(searchStart, input.cend(), match, regexPattern)) {
         for (size_t i = 0; i < patterns.size(); ++i) {
-            if (match[i+1].matched) {
+            if (match[i + 1].matched) {
                 string type = patterns[i].first;
-                string value = match[i+1].str();
 
-                // Handle special cases
-                if (type == "STRING" || type == "CHAR") {
-                    tokens.emplace_back(type, value.substr(1, value.length()-2));
-                } else {
-                    tokens.emplace_back(type, value);
+                if (type == "WHITESPACE") break; // Ignore whitespace
+                if (type == "COMMENT") break;    // ✅ Ignore comments
+                if (type == "NEWLINE") {
+                    tokens.emplace_back("LINE_BREAK", "\\n");
+                    break;
                 }
+
+                tokens.emplace_back(type, match[i + 1].str());
                 break;
             }
         }
