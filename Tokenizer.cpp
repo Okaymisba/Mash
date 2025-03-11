@@ -23,6 +23,7 @@ vector<Token> Tokenizer::tokenize(const string &input) {
         {"ELSE_IF", R"(\belse[ \t]+if\b)"},
         {"ELSE", R"(\belse\b)"},
         {"FOR", R"(\bfor\b)"},
+        {"IN", R"(\bin\b)"},
         {"TO", R"(\bto\b)"},
         {"STEP", R"(\bstep\b)"},
         {"UPTO", R"(\bupto\b)"},
@@ -33,12 +34,13 @@ vector<Token> Tokenizer::tokenize(const string &input) {
         {"WHILE", R"(\bwhile\b)"},
         {"PRINT", R"(\bprint\b)"},
         {"BOOL", R"(\btrue\b|\bfalse\b)"},
+        {"CHAR", R"('(?:[^'\\]|\\.)')"}, // Character literals (fixed)
         {"STRING", R"("(?:[^"\\]|\\.)*")"},
-        {"FLOAT", R"(\b\d+\.\d+f\b)"},   
-        {"DOUBLE", R"(\b\d+\.\d+\b)"},    
-        {"LONG", R"(\b\d{10,}\b)"},       
-        {"INTEGER", R"(\b\d+\b)"},        
-        {"TYPE", R"(\bint\b|\bfloat\b|\bdouble\b|\blong\b|\bbool\b|\bstring\b)"},
+        {"FLOAT", R"(\b\d+\.\d+f\b)"},
+        {"DOUBLE", R"(\b\d+\.\d+\b)"},
+        {"LONG", R"(\b\d{10,}\b)"},
+        {"INTEGER", R"(\b\d+\b)"},
+        {"TYPE", R"(\bint\b|\bfloat\b|\bdouble\b|\blong\b|\bbool\b|\bstring\b|\bchar\b)"},
         {"IDENTIFIER", R"(\b[a-zA-Z_][a-zA-Z0-9_]*\b)"}
     };
 
@@ -53,7 +55,7 @@ vector<Token> Tokenizer::tokenize(const string &input) {
     vector<Token> tokens;
     string::const_iterator searchStart(input.cbegin());
 
-    string lastType = ""; 
+    string lastType = ""; // Store the last declared type
 
     while (regex_search(searchStart, input.cend(), match, regexPattern)) {
         for (size_t i = 0; i < patterns.size(); ++i) {
@@ -67,17 +69,19 @@ vector<Token> Tokenizer::tokenize(const string &input) {
                     break;
                 }
 
-                
                 if (type == "TYPE") {
-                    lastType = value;
+                    lastType = value; // Store last declared type
                 }
 
-                
+                // Adjust token type based on last declared type
                 if (type == "INTEGER" && lastType == "long") {
                     type = "LONG"; 
                 } 
                 else if (type == "DOUBLE" && lastType == "float") {
                     type = "FLOAT"; 
+                } 
+                else if (type == "STRING" && lastType == "char") {
+                    type = "CHAR"; // Convert string token to char if declared type is char
                 }
 
                 tokens.emplace_back(type, value);
