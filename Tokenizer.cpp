@@ -7,36 +7,39 @@ using namespace std;
 
 vector<Token> Tokenizer::tokenize(const string &input) {
     vector<pair<string, string>> patterns = {
-        {"WHITESPACE", R"([ \t\r]+)"}, // Ignore whitespace
-        {"NEWLINE", R"(\n)"},          // Preserve line breaks
-        {"COMMENT", R"(//[^\n]*)"},    // ✅ Ignore comments (everything after //)
-        {"CHECK_IF", R"(\bcheck[ \t]+if\b)"},
-        {"ELSE_IF", R"(\belse[ \t]+if\b)"},  // ✅ ELSE_IF separately
-        {"ELSE", R"(\belse\b)"},
-        {"FOR", R"(\bfor\b)"},          // ✅ For loop
-        {"TO", R"(\bto\b)"},            // ✅ For loop range keyword
-        {"STEP", R"(\bstep\b)"},        // ✅ Step keyword for for-loops
-        {"UPTO", R"(\bupto\b)"},        // ✅ Upto range keyword
-        {"DOWNTO", R"(\bdownto\b)"},    // ✅ Downto range keyword
-        {"UPTILL", R"(\buptill\b)"},    // ✅ Uptill range keyword
-        {"DOWNTILL", R"(\bdowntill\b)"},// ✅ Downtill range keyword
-        {"DOWNUNTIL", R"(\bdownuntil\b)"}, // ✅ Downuntil range keyword
-        {"WHILE", R"(\bwhile\b)"},      // ✅ Added WHILE as separate token
-        {"PRINT", R"(\bprint\b)"},
-        {"BOOL", R"(\bTrue\b|\bFalse\b)"},
-        {"STRING", R"("(?:[^"\\]|\\.)*")"},
-        {"FLOAT", R"(\b\d+\.\d+f\b)"}, // ✅ Float with 'f' suffix
-        {"DOUBLE", R"(\b\d+\.\d+\b)"}, // ✅ Double without 'f'
-        {"INTEGER", R"(\b\d+\b)"},
-        {"COMPARISON_OPERATOR", R"(==|!=|<=|>=|<|>)"},
+        {"WHITESPACE", R"([ \t\r]+)"},
+        {"NEWLINE", R"(\n)"},
+        {"COMMENT", R"(//[^\n]*)"},
+        {"COLON", R"(:)"},
         {"ASSIGN", R"(=)"},
+        {"COMPARISON_OPERATOR", R"(==|!=|<=|>=|<|>)"},
         {"ARITHMETIC_OPERATOR", R"([-+*/%])"},
         {"OPEN_ROUND_BRACKET", R"(\()"},
         {"CLOSE_ROUND_BRACKET", R"(\))"},
         {"OPEN_CURLY_BRACKET", R"(\{)"},
         {"CLOSE_CURLY_BRACKET", R"(\})"},
         {"SEMICOLON", R"(;)"},
-        {"IDENTIFIER", R"(\b[a-zA-Z_][a-zA-Z0-9_]*\b)"}  // ✅ No conflicts with keywords
+        {"CHECK_IF", R"(\bcheck[ \t]+if\b)"},
+        {"ELSE_IF", R"(\belse[ \t]+if\b)"},
+        {"ELSE", R"(\belse\b)"},
+        {"FOR", R"(\bfor\b)"},
+        {"TO", R"(\bto\b)"},
+        {"STEP", R"(\bstep\b)"},
+        {"UPTO", R"(\bupto\b)"},
+        {"DOWNTO", R"(\bdownto\b)"},
+        {"UPTILL", R"(\buptill\b)"},
+        {"DOWNTILL", R"(\bdowntill\b)"},
+        {"DOWNUNTIL", R"(\bdownuntil\b)"},
+        {"WHILE", R"(\bwhile\b)"},
+        {"PRINT", R"(\bprint\b)"},
+        {"BOOL", R"(\btrue\b|\bfalse\b)"},
+        {"STRING", R"("(?:[^"\\]|\\.)*")"},
+        {"FLOAT", R"(\b\d+\.\d+f\b)"},   
+        {"DOUBLE", R"(\b\d+\.\d+\b)"},    
+        {"LONG", R"(\b\d{10,}\b)"},       
+        {"INTEGER", R"(\b\d+\b)"},        
+        {"TYPE", R"(\bint\b|\bfloat\b|\bdouble\b|\blong\b|\bbool\b|\bstring\b)"},
+        {"IDENTIFIER", R"(\b[a-zA-Z_][a-zA-Z0-9_]*\b)"}
     };
 
     string regexString;
@@ -50,19 +53,34 @@ vector<Token> Tokenizer::tokenize(const string &input) {
     vector<Token> tokens;
     string::const_iterator searchStart(input.cbegin());
 
+    string lastType = ""; 
+
     while (regex_search(searchStart, input.cend(), match, regexPattern)) {
         for (size_t i = 0; i < patterns.size(); ++i) {
             if (match[i + 1].matched) {
                 string type = patterns[i].first;
+                string value = match[i + 1].str();
 
-                if (type == "WHITESPACE") break; // Ignore whitespace
-                if (type == "COMMENT") break;    // ✅ Ignore comments
+                if (type == "WHITESPACE" || type == "COMMENT") break;
                 if (type == "NEWLINE") {
                     tokens.emplace_back("LINE_BREAK", "\\n");
                     break;
                 }
 
-                tokens.emplace_back(type, match[i + 1].str());
+                
+                if (type == "TYPE") {
+                    lastType = value;
+                }
+
+                
+                if (type == "INTEGER" && lastType == "long") {
+                    type = "LONG"; 
+                } 
+                else if (type == "DOUBLE" && lastType == "float") {
+                    type = "FLOAT"; 
+                }
+
+                tokens.emplace_back(type, value);
                 break;
             }
         }
