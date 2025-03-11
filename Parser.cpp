@@ -218,7 +218,7 @@ ASTNode Parser::parseStatement()
  *This function parses a for loop which follows the syntax for(<identifier> in <starting-integer> to <ending integer>){body}
  *The function constructs an AST node with the type "FOR" and add three children:
  * 1. Loop variable (IDENTIFIER)
- * 2. A sub node of type "RANGE" contaning child nodes of starting and ending values
+ * 2. A sub node of type "RANGE" containing child nodes of starting and ending values
  * 3. The loop body, parsed by calling parseBody()
  * @return An Abstract Syntax Tree representing for loop statement
  */
