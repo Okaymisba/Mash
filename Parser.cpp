@@ -203,8 +203,44 @@ ASTNode Parser::parseStatement()
     {
         return parseWhileLoop(); // parseWhileLoop() in Parser.cpp
     }
+    else if (token.type == "FOR")
+    {
+        return parseForLoop();
+    }
     else
     {
         throw runtime_error("Invalid statement: unexpected token " + token.type);
     }
+}
+
+ASTNode Parser::parseForLoop()
+{
+    consume("FOR");
+
+    ASTNode ForNode("FOR");
+    consume("OPEN_ROUND_BRACKET");
+
+    Token iden = consume("IDENTIFIER");
+    ASTNode identifierNode("IDENTIFIER", iden.value);
+    ForNode.children.push_back(identifierNode);
+
+    consume("IN");
+
+    ASTNode rangeNode("RANGE");
+
+    Token starting = consume("INTEGER");
+    rangeNode.children.push_back(ASTNode("START_VALUE", starting.value));
+
+    consume("TO");
+
+    Token ending = consume("INTEGER");
+    rangeNode.children.push_back(ASTNode("END_VALUE", ending.value));
+
+    ForNode.children.push_back(rangeNode);
+    consume("CLOSE_ROUND_BRACKET");
+
+    ASTNode body = parseBody(); //parseBody() in func/parseBody/ParseBody.cpp 
+    ForNode.children.push_back(body);
+
+    return ForNode;
 }
