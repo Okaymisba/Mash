@@ -9,14 +9,12 @@ using namespace std;
  * Reads the content of a file and returns it as a string.
  *
  * This function opens a file specified by the file path, reads its content,
- * and constructs a string. It replaces newline characters with the literal
- * string "\n" to preserve line breaks in a single line string format.
+ * and constructs a string while preserving actual newlines (`\n`).
  * If the file cannot be opened, it outputs an error message to standard error
- * and returns an empty string.
+ * and exits with an error code.
  *
  * @param filePath The path to the file to be read.
- * @return A string containing the contents of the file with newline characters
- *         replaced by "\n". Returns an empty string if the file cannot be opened.
+ * @return A string containing the contents of the file with actual newlines.
  */
 
 string readFile(const string &filePath)
@@ -24,23 +22,12 @@ string readFile(const string &filePath)
     ifstream file(filePath);
     if (!file.is_open())
     {
-        std::cerr << "Error opening file." << std::endl;
-        return "";
+        cerr << "Error: Could not open file " << filePath << endl;
+        exit(1);
     }
 
     stringstream buffer;
-    char ch;
-    while (file.get(ch))
-    {
-        if (ch == '\n')
-        {
-            buffer << "\\n";
-        }
-        else
-        {
-            buffer << ch;
-        }
-    }
+    buffer << file.rdbuf(); // Reads the file as-is, preserving actual newlines
 
     return buffer.str();
-};
+}
