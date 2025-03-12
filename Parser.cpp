@@ -53,10 +53,21 @@ ASTNode Parser::parse()
 ASTNode Parser::parseAssignment()
 {
     Token identifier = consume("IDENTIFIER");
-    consume("ASSIGN");
-
     ASTNode assignment("ASSIGNMENT");
-    assignment.children.push_back(ASTNode("IDENTIFIER", identifier.value));
+
+    ASTNode identifierNode("IDENTIFIER", identifier.value);
+
+    if (peek().type == "COLON")
+    {
+        consume("COLON");
+        Token type = consume("TYPE");
+        ASTNode datatype(type.type,type.value);
+        identifierNode.children.push_back(datatype);
+    }
+
+    assignment.children.push_back(identifierNode);
+
+    consume("ASSIGN");
 
     // Wraping arithmetic expressions inside an EXPRESSION node
     ASTNode expressionNode = parseExpression(); // parseExpression() in func/parseExpression/parseExpression.cpp
