@@ -11,16 +11,27 @@ vector<Token> Tokenizer::tokenize(const string &input)
     vector<pair<string, string>> patterns = {
         {"WHITESPACE", R"([ \t\r]+)"},
         {"NEWLINE", R"(\n)"},
+        {"MULTI_LINE_COMMENT", R"(/\*[\s\S]*?\*/)"},
         {"COMMENT", R"(//[^\n]*)"},
         {"COLON", R"(:)"},
-        {"COMPARISON_OPERATOR", R"(==|!=|<=|>=|<|>)"},
-        {"ASSIGN", R"(=)"},
-        {"ARITHMETIC_OPERATOR", R"([-+*/%])"},
+        {"SEMICOLON", R"(;)"},
+        {"COMMA", R"(,)"},
+        {"DOT", R"(\.)"},
         {"OPEN_ROUND_BRACKET", R"(\()"},
         {"CLOSE_ROUND_BRACKET", R"(\))"},
         {"OPEN_CURLY_BRACKET", R"(\{)"},
         {"CLOSE_CURLY_BRACKET", R"(\})"},
-        {"SEMICOLON", R"(;)"},
+        {"OPEN_SQUARE_BRACKET", R"(\[)"},
+        {"CLOSE_SQUARE_BRACKET", R"(\])"},
+        {"COMPARISON_OPERATOR", R"(==|!=|<=|>=|<|>)"},
+        {"COMPOUND_ASSIGN", R"(\+=|-=|\*=|/=|%=)"},
+        {"ASSIGN", R"(=)"},
+        {"LOGICAL_OPERATOR", R"(&&|\|\|)"},
+        {"BITWISE_OPERATOR", R"(&|\||\^|<<|>>)"},
+        {"ARITHMETIC_OPERATOR", R"([-+*/%])"},
+        {"INCREMENT", R"(\+\+)"},
+        {"DECREMENT", R"(--)"},
+        {"NOT", R"(!)"},
         {"CHECK_IF", R"(\bcheck[ \t]+if\b)"},
         {"ELSE_IF", R"(\belse[ \t]+if\b)"},
         {"ELSE", R"(\belse\b)"},
@@ -32,7 +43,12 @@ vector<Token> Tokenizer::tokenize(const string &input)
         {"DOWNTO", R"(\bdownto\b)"},
         {"DOWNUNTIL", R"(\bdownuntil\b)"},
         {"WHILE", R"(\bwhile\b)"},
+        {"BREAK", R"(\bbreak\b)"},
+        {"CONTINUE", R"(\bcontinue\b)"},
         {"PRINT", R"(\bprint\b)"},
+        {"RETURN", R"(\breturn\b)"},
+        {"FUNCTION", R"(\bfunction\b)"},
+        {"NULL", R"(\bnull\b)"},
         {"BOOL", R"(\btrue\b|\bfalse\b)"},
         {"CHAR", R"('(?:[^'\\]|\\.)')"},
         {"STRING", R"("(?:[^"\\]|\\.)*")"},
@@ -66,7 +82,7 @@ vector<Token> Tokenizer::tokenize(const string &input)
                 string type = patterns[i].first;
                 string value = match[i + 1].str();
 
-                if (type == "WHITESPACE" || type == "COMMENT")
+                if (type == "WHITESPACE" || type == "COMMENT" || type == "MULTI_LINE_COMMENT")
                     break;
                 if (type == "NEWLINE")
                 {
@@ -75,42 +91,38 @@ vector<Token> Tokenizer::tokenize(const string &input)
                 }
 
                 if (type == "TYPE")
-                {
                     lastType = value;
-                }
 
                 if (type == "INTEGER")
                 {
                     long long numValue = stoll(value);
-
-                    if (lastType == "long")
-                    {
+                    if (lastType == "long" || numValue > INT_MAX)
                         type = "LONG";
-                    }
-                    else if (numValue > INT_MAX)
-                    {
-                        type = "LONG";
-                    }
                     else
-                    {
                         type = "INTEGER";
-                    }
                 }
                 else if (type == "DOUBLE" && lastType == "float")
                 {
                     type = "FLOAT";
                 }
-                else if (type == "STRING" && lastType == "char")
+                else if (type == "STRING")
                 {
-                    type = "CHAR";
-                }
-                else if (type == "FLOAT")
-                {
-
-                    if (!value.empty() && value.back() == 'f')
+                    if (value.length() >= 2) 
                     {
-                        value.pop_back();
+                        value = value.substr(1, value.length() - 2); 
                     }
+                }
+                else if (type == "CHAR")
+                {
+                    if (value.length() == 3) 
+                    {
+                        value = value.substr(1, 1); 
+                    }
+                }
+
+                else if (type == "FLOAT" && !value.empty() && value.back() == 'f')
+                {
+                    value.pop_back();
                 }
 
                 tokens.emplace_back(type, value);
