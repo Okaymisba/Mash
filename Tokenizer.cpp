@@ -1,48 +1,51 @@
-#include <iostream>
 #include "Tokenizer.h"
+#include <iostream>
 #include <map>
 #include <regex>
+#include <climits>
 
-vector<Token> Tokenizer::tokenize(string &input)
+using namespace std;
+
+vector<Token> Tokenizer::tokenize(const string &input)
 {
-    // Map of all the tokens
     vector<pair<string, string>> patterns = {
-        {"CHECK_IF", R"(\bcheck\s*if\b)"},
-        {"ELSE", R"(\belse\b)"},
-        {"ELSE IF", R"(\s+\belse\s+if\b)"},
-        {"PRINT", R"(\bprint\b)"},
-        {"FOR", R"(\bfor\b)"},
-        {"WHILE", R"(\bwhile\b)"},
-        {"LINE_BREAK", R"(\\n)"},
-        {"BOOL", R"(\b(?:True|False|bool)\b)"},
-        {"DOUBLE", R"(\b(?:double|\d+\.\d{8,})\b)"},
-        {"DOUBLE", R"([+-]\d+\.\d{8,})"},
-        {"FLOAT", R"(\b(?:float|\d+\.\d{1,7})\b)"},
-        {"FLOAT", R"([+-]\d+\.\d{1,7})"},
-        {"INTEGER", R"(\b(?:int|\d+)\b)"},
-        {"INTEGER", R"([+-]\d+)"},
-        {"STRING", R"("[^"]*")"},
-        {"CHAR", R"('[^']')"},
-        {"COMPARISON_OPERATOR", R"(==|!=|<=|>=|<|>)"},
-        {"ASSIGNMENT_OPERATOR", R"(\+=|\-=|/=|\*=|\%=)"},
-        {"ASSIGN", R"(=)"},
-        {"ARITHMETIC_OPERATOR", R"([+\*/%-])"},
-        {"IDENTIFIER", R"([a-zA-Z_][a-zA-Z0-9_]*)"},
-        {"SEMICOLON", R"(;)"},
+        {"WHITESPACE", R"([ \t\r]+)"},
+        {"NEWLINE", R"(\n)"},
+        {"COMMENT", R"(//[^\n]*)"},
         {"COLON", R"(:)"},
-        {"DOT", R"(\.)"},
+        {"COMPARISON_OPERATOR", R"(==|!=|<=|>=|<|>)"},
+        {"ASSIGN", R"(=)"},
+        {"ARITHMETIC_OPERATOR", R"([-+*/%])"},
         {"OPEN_ROUND_BRACKET", R"(\()"},
         {"CLOSE_ROUND_BRACKET", R"(\))"},
         {"OPEN_CURLY_BRACKET", R"(\{)"},
         {"CLOSE_CURLY_BRACKET", R"(\})"},
-        {"OPEN_SQUARE_BRACKET", R"(\[)"},
-        {"CLOSE_SQUARE_BRACKET", R"(\])"}};
+        {"SEMICOLON", R"(;)"},
+        {"CHECK_IF", R"(\bcheck[ \t]+if\b)"},
+        {"ELSE_IF", R"(\belse[ \t]+if\b)"},
+        {"ELSE", R"(\belse\b)"},
+        {"FOR", R"(\bfor\b)"},
+        {"IN", R"(\bin\b)"},
+        {"TO", R"(\bto\b)"},
+        {"STEP", R"(\bstep\b)"},
+        {"UNTIL", R"(\buntil\b)"},
+        {"DOWNTO", R"(\bdownto\b)"},
+        {"DOWNUNTIL", R"(\bdownuntil\b)"},
+        {"WHILE", R"(\bwhile\b)"},
+        {"PRINT", R"(\bprint\b)"},
+        {"BOOL", R"(\btrue\b|\bfalse\b)"},
+        {"CHAR", R"('(?:[^'\\]|\\.)')"},
+        {"STRING", R"("(?:[^"\\]|\\.)*")"},
+        {"FLOAT", R"(\b\d+\.\d+f\b)"},
+        {"DOUBLE", R"(\b\d+\.\d+\b)"},
+        {"INTEGER", R"(\b\d+\b)"},
+        {"TYPE", R"(\bint\b|\bfloat\b|\bdouble\b|\blong\b|\bbool\b|\bstring\b|\bchar\b)"},
+        {"IDENTIFIER", R"(\b[a-zA-Z_][a-zA-Z0-9_]*\b)"}};
 
-    // Constructing a single regex pattern from all token patterns
     string regexString;
     for (size_t i = 0; i < patterns.size(); ++i)
     {
-        if (!regexString.empty())
+        if (i > 0)
             regexString += "|";
         regexString += "(" + patterns[i].second + ")";
     }
@@ -50,37 +53,73 @@ vector<Token> Tokenizer::tokenize(string &input)
     regex regexPattern(regexString);
     smatch match;
     vector<Token> tokens;
-
     string::const_iterator searchStart(input.cbegin());
+
+    string lastType = "";
 
     while (regex_search(searchStart, input.cend(), match, regexPattern))
     {
-
         for (size_t i = 0; i < patterns.size(); ++i)
         {
             if (match[i + 1].matched)
             {
-                string &key = patterns[i].first;
+                string type = patterns[i].first;
+                string value = match[i + 1].str();
 
-                if (key != "WHITESPACE")
+                if (type == "WHITESPACE" || type == "COMMENT")
+                    break;
+                if (type == "NEWLINE")
                 {
-                    if (key == "STRING" || key == "CHAR")   //This will exclude inverted commas from STRING and CHAR and will only extract the text between them
+                    tokens.emplace_back("LINE_BREAK", "\\n");
+                    break;
+                }
+
+                if (type == "TYPE")
+                {
+                    lastType = value;
+                }
+
+                if (type == "INTEGER")
+                {
+                    long long numValue = stoll(value);
+
+                    if (lastType == "long")
                     {
-                        string str = match[i + 1];   
-                        string string_text = str.substr(1, str.length() - 2);
-                        tokens.emplace_back(key, string_text);
+                        type = "LONG";
+                    }
+                    else if (numValue > INT_MAX)
+                    {
+                        type = "LONG";
                     }
                     else
                     {
-                        tokens.emplace_back(key, match[i + 1].str());
+                        type = "INTEGER";
                     }
                 }
+                else if (type == "DOUBLE" && lastType == "float")
+                {
+                    type = "FLOAT";
+                }
+                else if (type == "STRING" && lastType == "char")
+                {
+                    type = "CHAR";
+                }
+                else if (type == "FLOAT")
+                {
+
+                    if (!value.empty() && value.back() == 'f')
+                    {
+                        value.pop_back();
+                    }
+                }
+
+                tokens.emplace_back(type, value);
+                break;
             }
         }
-
-        // Move searchStart to the next unmatched position
         searchStart = match.suffix().first;
     }
 
+    tokens.emplace_back("EOF", "");
     return tokens;
 }
