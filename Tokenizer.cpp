@@ -2,6 +2,7 @@
 #include <iostream>
 #include <map>
 #include <regex>
+#include <climits> // For INT_MAX
 
 using namespace std;
 
@@ -12,7 +13,7 @@ vector<Token> Tokenizer::tokenize(const string &input) {
         {"COMMENT", R"(//[^\n]*)"},
         {"COLON", R"(:)"},
         {"ASSIGN", R"(=)"},
-        {"COMPARISON_OPERATOR", R"(==|!=|<=|>=|<|>)"},
+        {"COMPARISON_OPERATOR", R"(==|!=|<=|>=|<|>)"},  // Fixed duplicate
         {"ARITHMETIC_OPERATOR", R"([-+*/%])"},
         {"OPEN_ROUND_BRACKET", R"(\()"},
         {"CLOSE_ROUND_BRACKET", R"(\))"},
@@ -38,7 +39,6 @@ vector<Token> Tokenizer::tokenize(const string &input) {
         {"STRING", R"("(?:[^"\\]|\\.)*")"},
         {"FLOAT", R"(\b\d+\.\d+f\b)"},
         {"DOUBLE", R"(\b\d+\.\d+\b)"},
-        {"LONG", R"(\b\d{10,}\b)"},
         {"INTEGER", R"(\b\d+\b)"},
         {"TYPE", R"(\bint\b|\bfloat\b|\bdouble\b|\blong\b|\bbool\b|\bstring\b|\bchar\b)"},
         {"IDENTIFIER", R"(\b[a-zA-Z_][a-zA-Z0-9_]*\b)"}
@@ -74,8 +74,16 @@ vector<Token> Tokenizer::tokenize(const string &input) {
                 }
 
                 // Adjust token type based on last declared type
-                if (type == "INTEGER" && lastType == "long") {
-                    type = "LONG"; 
+                if (type == "INTEGER") {
+                    long long numValue = stoll(value); // Convert to long long to check range
+
+                    if (lastType == "long") {
+                        type = "LONG"; // If explicitly declared long
+                    } else if (numValue > INT_MAX) {
+                        type = "LONG"; // If value is beyond int range
+                    } else {
+                        type = "INTEGER"; // Otherwise, it's an int
+                    }
                 } 
                 else if (type == "DOUBLE" && lastType == "float") {
                     type = "FLOAT"; 
