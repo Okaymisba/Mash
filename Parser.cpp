@@ -53,10 +53,21 @@ ASTNode Parser::parse()
 ASTNode Parser::parseAssignment()
 {
     Token identifier = consume("IDENTIFIER");
-    consume("ASSIGN");
-
     ASTNode assignment("ASSIGNMENT");
-    assignment.children.push_back(ASTNode("IDENTIFIER", identifier.value));
+
+    ASTNode identifierNode("IDENTIFIER", identifier.value);
+
+    if (peek().type == "COLON")
+    {
+        consume("COLON");
+        Token type = consume("TYPE");
+        ASTNode datatype(type.type,type.value);
+        identifierNode.children.push_back(datatype);
+    }
+
+    assignment.children.push_back(identifierNode);
+
+    consume("ASSIGN");
 
     // Wraping arithmetic expressions inside an EXPRESSION node
     ASTNode expressionNode = parseExpression(); // parseExpression() in func/parseExpression/parseExpression.cpp
@@ -203,8 +214,54 @@ ASTNode Parser::parseStatement()
     {
         return parseWhileLoop(); // parseWhileLoop() in Parser.cpp
     }
+    else if (token.type == "FOR")
+    {
+        return parseForLoop();
+    }
     else
     {
         throw runtime_error("Invalid statement: unexpected token " + token.type);
     }
+}
+
+/**
+ *Parses a for loop statement and generates an Abstract Syntax Tree node.
+ *This function parses a for loop which follows the syntax for(<identifier> in <starting-integer> to <ending integer>){body}
+ *The function constructs an AST node with the type "FOR" and add three children:
+ * 1. Loop variable (IDENTIFIER)
+ * 2. A sub node of type "RANGE" containing child nodes of starting and ending values
+ * 3. The loop body, parsed by calling parseBody()
+ * @return An Abstract Syntax Tree representing for loop statement
+ */
+
+ASTNode Parser::parseForLoop()
+{
+    consume("FOR");
+
+    ASTNode ForNode("FOR");
+    consume("OPEN_ROUND_BRACKET");
+
+    Token iden = consume("IDENTIFIER");
+    ASTNode identifierNode("IDENTIFIER", iden.value);
+    ForNode.children.push_back(identifierNode);
+
+    consume("IN");
+
+    ASTNode rangeNode("RANGE");
+
+    Token starting = consume("INTEGER");
+    rangeNode.children.push_back(ASTNode("START_VALUE", starting.value));
+
+    consume("TO");
+
+    Token ending = consume("INTEGER");
+    rangeNode.children.push_back(ASTNode("END_VALUE", ending.value));
+
+    ForNode.children.push_back(rangeNode);
+    consume("CLOSE_ROUND_BRACKET");
+
+    ASTNode body = parseBody(); // parseBody() in func/parseBody/ParseBody.cpp
+    ForNode.children.push_back(body);
+
+    return ForNode;
 }
