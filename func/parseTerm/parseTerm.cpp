@@ -22,7 +22,7 @@ ASTNode Parser::parseTerm()
         return expr;
     }
 
-    if (token.type == "INTEGER" || token.type == "FLOAT" || token.type == "DOUBLE" || token.type == "STRING" || token.type == "BOOL" || token.type == "CHAR")
+    if (token.type == "INTEGER" || token.type == "FLOAT" || token.type == "DOUBLE" || token.type == "STRING" || token.type == "BOOL" || token.type == "CHAR" || token.type == "LONG")
     {
         return ASTNode(token.type, consume(token.type).value);
     }
