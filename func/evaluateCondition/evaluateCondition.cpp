@@ -1,23 +1,61 @@
 #include "../../Evaluator.h"
 
 /**
- * Evaluates a conditional expression represented by the given AST node.
+ * Evaluates a condition node from an abstract syntax tree (AST).
  *
- * This function processes a node of type "CONDITION" by evaluating its
- * child nodes to determine the left and right operands and the operator.
- * Supported operators are "==", "!=", ">", "<", ">=", and "<=".
- * The function converts the operand values to double for comparison and
- * returns "true" or "false" as a string based on whether the condition is met.
+ * This function processes a condition node of type "CONDITION" and evaluates
+ * it based on its child nodes. It supports comparison operators such as
+ * "==", "!=", ">", "<", ">=", and "<=". The function assumes that the right
+ * operand can be a boolean literal ("true" or "false") or an expression that
+ * needs to be evaluated. For non-boolean expressions, it converts the result
+ * to a double for comparison.
  *
- * @param node The AST node representing the condition to evaluate.
- * @return "true" if the condition is satisfied; otherwise, "false".
- * @throws runtime_error If the node type is not "CONDITION" or the operator is unsupported.
+ * @param node The ASTNode representing the condition to be evaluated.
+ * @return A string "true" or "false" depending on the evaluation result.
+ * @throws runtime_error If the node type is not "CONDITION" or if an
+ *                       unsupported operator is encountered.
  */
 
 string Evaluator::evaluateCondition(const ASTNode &node)
 {
     if (node.type == "CONDITION")
     {
+        if (node.children[2].value == "true" || node.children[2].value == "false")
+        {
+            string left = evaluateExpression(node.children[0]);
+            string op = node.children[1].value;
+            string right = node.children[2].value;
+
+            if (op == "==")
+            {
+                return (left == right) ? "true" : "false";
+            }
+            else if (op == "!=")
+            {
+                return (left != right) ? "true" : "false";
+            }
+            else if (op == ">")
+            {
+                return (left > right) ? "true" : "false";
+            }
+            else if (op == "<")
+            {
+                return (left < right) ? "true" : "false";
+            }
+            else if (op == ">=")
+            {
+                return (left >= right) ? "true" : "false";
+            }
+            else if (op == "<=")
+            {
+                return (left <= right) ? "true" : "false";
+            }
+            else
+            {
+                throw runtime_error("Unsupported condition operator: " + op);
+            }
+        }
+
         string left = evaluateExpression(node.children[0]);
         string op = node.children[1].value;
         string right = evaluateExpression(node.children[2]);

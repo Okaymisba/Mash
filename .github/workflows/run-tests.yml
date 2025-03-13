@@ -1,0 +1,23 @@
+name: Run C++ Tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  ubuntu-tests:
+    name: 🐧 Ubuntu Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: ⬇️ Checkout Code
+        uses: actions/checkout@v3
+
+      - name: 🧰 Install g++
+        run: sudo apt-get update && sudo apt-get install -y g++
+
+      - name: 🔧 Make test script executable
+        run: chmod +x run_tests.sh
+
+      - name: 🚀 Run Tests
+        run: ./run_tests.sh

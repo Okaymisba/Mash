@@ -34,6 +34,10 @@ void Evaluator::evaluate(const ASTNode &node)
     {
         evaluateIfStatement(node);
     }
+    else if (node.type == "WHILE")
+    {
+        evaluateWhileLoop(node);
+    }
     else
     {
         throw runtime_error("Unknown node type: " + node.type);
@@ -137,6 +141,17 @@ string Evaluator::evaluatePrint(const ASTNode &node)
     return "";
 }
 
+/**
+ * Evaluates an if statement by checking conditions and executing bodies.
+ *
+ * This function iterates over the children of the given AST node and evaluates
+ * the condition and body of each if and else if clause. If the condition is
+ * satisfied, the body is executed and the function returns. If none of the
+ * conditions are satisfied, the else clause is executed if present.
+ *
+ * @param node The Abstract Syntax Tree node representing the if statement.
+ */
+
 void Evaluator::evaluateIfStatement(const ASTNode &node)
 {
     bool conditionMet = false;
@@ -156,5 +171,24 @@ void Evaluator::evaluateIfStatement(const ASTNode &node)
             evaluateBody(child.children[0]);
             conditionMet = true;
         }
+    }
+}
+
+/**
+ * Evaluates a while loop statement by checking the condition and executing the body.
+ *
+ * This function evaluates the condition of the given while loop node and executes
+ * the body if the condition is satisfied. The condition is evaluated using the
+ * evaluateCondition() function, and the body is evaluated using the evaluateBody()
+ * function. The process is repeated until the condition is no longer satisfied.
+ *
+ * @param node The Abstract Syntax Tree node representing the while loop statement.
+ */
+
+void Evaluator::evaluateWhileLoop(const ASTNode &node)
+{
+    while (evaluateCondition(node.children[0]) == "true")
+    {
+        evaluateBody(node.children[1]);
     }
 }

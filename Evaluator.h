@@ -24,6 +24,7 @@ private:
     string evaluateAssignment(const ASTNode &node);
     string evaluatePrint(const ASTNode &node);
     void evaluateIfStatement(const ASTNode &node);
+    void evaluateWhileLoop(const ASTNode &node);
     string evaluateCondition(const ASTNode &node);
     string evaluateBody(const ASTNode &node);
 
