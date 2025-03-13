@@ -50,35 +50,6 @@ ASTNode Parser::parse()
  * @return An Abstract Syntax Tree node representing the assignment statement.
  */
 
-// ASTNode Parser::parseAssignment()
-// {
-//     Token identifier = consume("IDENTIFIER");
-//     ASTNode assignment("ASSIGNMENT");
-
-//     ASTNode identifierNode("IDENTIFIER", identifier.value);
-
-//     if (peek().type == "COLON")
-//     {
-//         consume("COLON");
-//         Token typ = consume("TYPE");
-//         ASTNode datatype("TYPE",typ.value);
-//         identifierNode.children.push_back(datatype);
-//     }
-
-//     assignment.children.push_back(identifierNode);
-
-//     consume("ASSIGN");
-
-//     // Wraping arithmetic expressions inside an EXPRESSION node
-//     ASTNode expressionNode = parseExpression(); // parseExpression() in func/parseExpression/parseExpression.cpp
-//     assignment.children.push_back(expressionNode);
-
-//     consume("SEMICOLON");
-//     consume("LINE_BREAK");
-
-//     return assignment;
-// }
-
 ASTNode Parser::parseAssignment()
 {
     Token identifier = consume("IDENTIFIER");
@@ -99,7 +70,7 @@ ASTNode Parser::parseAssignment()
 
         // Wraping arithmetic expressions inside an EXPRESSION node
         ASTNode expressionNode = parseExpression(); // parseExpression() in func/parseExpression/parseExpression.cpp
-        if (ValidateDataType(identifierNode,expressionNode))
+        if (ValidateDataType(identifierNode, expressionNode))
         {
             assignment.children.push_back(expressionNode);
             consume("SEMICOLON");
@@ -124,7 +95,6 @@ ASTNode Parser::parseAssignment()
 
         consume("SEMICOLON");
         consume("LINE_BREAK");
-
     }
     return assignment;
 }
