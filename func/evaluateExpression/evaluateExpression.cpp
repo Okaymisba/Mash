@@ -12,7 +12,7 @@
 
 string Evaluator::evaluateExpression(const ASTNode &node)
 {
-    if (node.type == "NUMBER" || node.type == "INTEGER" || node.type == "FLOAT" || node.type == "DOUBLE")
+    if (node.type == "LONG" || node.type == "INTEGER" || node.type == "FLOAT" || node.type == "DOUBLE")
     {
         return node.value;
     }

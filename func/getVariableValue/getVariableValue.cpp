@@ -32,6 +32,14 @@ string Evaluator::getVariableValue(const string &identifier)
     {
         return stringVariables[identifier];
     }
+    else if (charVariables.find(identifier) != charVariables.end())
+    {
+        return string(1, charVariables[identifier]);
+    }
+    else if (longVariables.find(identifier) != longVariables.end())
+    {
+        return to_string(longVariables[identifier]);
+    }
     else
     {
         throw runtime_error("Undefined variable: " + identifier);

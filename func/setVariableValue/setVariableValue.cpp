@@ -37,6 +37,14 @@ void Evaluator::setVariableValue(const string &identifier, const string &value, 
     {
         stringVariables[identifier] = value;
     }
+    else if (type == "CHAR")
+    {
+        charVariables[identifier] = value[0];
+    }
+    else if (type == "LONG")
+    {
+        longVariables[identifier] = stol(value);
+    }
     else
     {
         throw runtime_error("Unsupported variable type: " + type);
