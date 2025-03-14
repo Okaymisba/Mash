@@ -15,10 +15,12 @@ public:
 
 private:
     map<string, int> intVariables;
+    map<string, long> longVariables;
     map<string, float> floatVariables;
     map<string, double> doubleVariables;
     map<string, bool> boolVariables;
     map<string, string> stringVariables;
+    map<string, char> charVariables;
 
     string evaluateExpression(const ASTNode &node);
     string evaluateAssignment(const ASTNode &node);

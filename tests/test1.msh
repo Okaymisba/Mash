@@ -1,0 +1,14 @@
+b = 123;
+print(b)
+
+c = 123.456;
+print(c)
+
+d = true;
+print(d)
+
+e = false;
+print(e)
+
+f = 3.142f;
+print(f)

@@ -70,9 +70,29 @@ string Evaluator::evaluateAssignment(const ASTNode &node)
     {
         setVariableValue(identifier, node.children[1].value, "STRING");
     }
+    else if (node.children[1].type == "CHAR")
+    {
+        setVariableValue(identifier, node.children[1].value, "CHAR");
+    }
     else if (node.children[1].type == "BOOL")
     {
         setVariableValue(identifier, node.children[1].value, "BOOL");
+    }
+    else if (node.children[1].type == "DOUBLE")
+    {
+        setVariableValue(identifier, node.children[1].value, "DOUBLE");
+    }
+    else if (node.children[1].type == "FLOAT")
+    {
+        setVariableValue(identifier, node.children[1].value, "FLOAT");
+    }
+    else if (node.children[1].type == "LONG")
+    {
+        setVariableValue(identifier, node.children[1].value, "LONG");
+    }
+    else if (node.children[1].type == "INTEGER")
+    {
+        setVariableValue(identifier, node.children[1].value, "INTEGER");
     }
     else
     {
@@ -88,6 +108,10 @@ string Evaluator::evaluateAssignment(const ASTNode &node)
             {
                 setVariableValue(identifier, value, "FLOAT");
             }
+        }
+        else if (value.size() >= 10)
+        {
+            setVariableValue(identifier, value, "LONG");
         }
         else
         {
