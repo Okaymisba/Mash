@@ -61,21 +61,41 @@ ASTNode Parser::parseAssignment()
     {
         consume("COLON");
         Token type = consume("TYPE");
-        ASTNode datatype(type.type,type.value);
+        ASTNode datatype(type.type, type.value);
         identifierNode.children.push_back(datatype);
+
+        assignment.children.push_back(identifierNode);
+
+        consume("ASSIGN");
+
+        // Wraping arithmetic expressions inside an EXPRESSION node
+        ASTNode expressionNode = parseExpression(); // parseExpression() in func/parseExpression/parseExpression.cpp
+        if (ValidateDataType(identifierNode, expressionNode))
+        {
+            assignment.children.push_back(expressionNode);
+            consume("SEMICOLON");
+            consume("LINE_BREAK");
+
+            return assignment;
+        }
+        else
+            throw runtime_error("Unexpected type: Declared " + identifierNode.children[0].value + " but got " + expressionNode.type);
     }
 
-    assignment.children.push_back(identifierNode);
+    else
+    {
 
-    consume("ASSIGN");
+        assignment.children.push_back(identifierNode);
 
-    // Wraping arithmetic expressions inside an EXPRESSION node
-    ASTNode expressionNode = parseExpression(); // parseExpression() in func/parseExpression/parseExpression.cpp
-    assignment.children.push_back(expressionNode);
+        consume("ASSIGN");
 
-    consume("SEMICOLON");
-    consume("LINE_BREAK");
+        // Wraping arithmetic expressions inside an EXPRESSION node
+        ASTNode expressionNode = parseExpression(); // parseExpression() in func/parseExpression/parseExpression.cpp
+        assignment.children.push_back(expressionNode);
 
+        consume("SEMICOLON");
+        consume("LINE_BREAK");
+    }
     return assignment;
 }
 

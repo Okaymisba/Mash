@@ -24,6 +24,8 @@ private:
 
     int getPrecedence(const string &op);
 
+    bool ValidateDataType(const ASTNode &node1, const ASTNode &node2);
+
     ASTNode parseExpression(int minimumPrecedence = 0);
 
     ASTNode parseTerm();
