@@ -1,3 +1,6 @@
+a = "Hello, World!";
+print(a)
+
 b = 123;
 print(b)
 
@@ -12,3 +15,6 @@ print(e)
 
 f = 3.142f;
 print(f)
+
+g = 'a';
+print(g)
