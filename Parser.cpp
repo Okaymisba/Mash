@@ -246,7 +246,7 @@ ASTNode Parser::parseStatement()
 
 /**
  *Parses a for loop statement and generates an Abstract Syntax Tree node.
- *This function parses a for loop which follows the syntax for(<identifier> in <starting-integer> to <ending integer>){body}
+ *This function parses a for loop which follows the syntax for(<identifier> in <starting-value> to <ending value>){body}
  *The function constructs an AST node with the type "FOR" and add three children:
  * 1. Loop variable (IDENTIFIER)
  * 2. A sub node of type "RANGE" containing child nodes of starting and ending values
@@ -269,15 +269,35 @@ ASTNode Parser::parseForLoop()
 
     ASTNode rangeNode("RANGE");
 
-    Token starting = consume("INTEGER");
-    rangeNode.children.push_back(ASTNode("START_VALUE", starting.value));
+    ASTNode start("START");
 
-    consume("TO");
-
-    Token ending = consume("INTEGER");
-    rangeNode.children.push_back(ASTNode("END_VALUE", ending.value));
+    ASTNode start_value = parseExpression();
+    start.children.push_back(start_value);
+    rangeNode.children.push_back(start);
+    Token range_type = peek();
+    if (range_type.type == "TO" || range_type.type == "DOWNTO" || range_type.type == "DOWNUNTIL" || range_type.type == "UNTIL")
+    {
+        consume(range_type.type);
+    }
+    else
+    {
+        throw runtime_error("Invalid range type: Expected to, until, downuntil, downto");
+    }
+    ASTNode end("END");
+    ASTNode end_value = parseExpression();
+    end.children.push_back(end_value);
+    rangeNode.children.push_back(end);
 
     ForNode.children.push_back(rangeNode);
+
+    if (peek().type == "STEP")
+    {
+        consume("STEP");
+        ASTNode step("STEP");
+        ASTNode step_value = parseExpression(); // Parse step expression
+        step.children.push_back(step_value);
+        ForNode.children.push_back(step);
+    }
     consume("CLOSE_ROUND_BRACKET");
 
     ASTNode body = parseBody(); // parseBody() in func/parseBody/ParseBody.cpp
