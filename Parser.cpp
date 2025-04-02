@@ -278,6 +278,8 @@ ASTNode Parser::parseForLoop()
     if (range_type.type == "TO" || range_type.type == "DOWNTO" || range_type.type == "DOWNUNTIL" || range_type.type == "UNTIL")
     {
         consume(range_type.type);
+        ASTNode RangeType(range_type.type);
+        rangeNode.children.push_back(RangeType);
     }
     else
     {
