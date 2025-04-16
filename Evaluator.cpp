@@ -38,6 +38,10 @@ void Evaluator::evaluate(const ASTNode &node)
     {
         evaluateWhileLoop(node);
     }
+    else if (node.type == "FOR")
+    {
+        evaluateForLoop(node);
+    }
     else
     {
         throw runtime_error("Unknown node type: " + node.type);
@@ -214,5 +218,78 @@ void Evaluator::evaluateWhileLoop(const ASTNode &node)
     while (evaluateCondition(node.children[0]) == "true")
     {
         evaluateBody(node.children[1]);
+    }
+}
+
+/**
+ * Evaluates a for loop statement by initializing the loop variable and iterating through the range.
+ *
+ * This function evaluates a for loop by:
+ * 1. Getting the loop variable identifier
+ * 2. Extracting the range information (start, type, end)
+ * 3. Optionally getting the step value
+ * 4. Executing the loop body for each value in the range
+ *
+ * @param node The Abstract Syntax Tree node representing the for loop statement.
+ */
+
+void Evaluator::evaluateForLoop(const ASTNode &node)
+{
+    string identifier = node.children[0].value;
+
+    const ASTNode &rangeNode = node.children[1];
+
+    string startValue = evaluateExpression(rangeNode.children[0].children[0]);
+    int start = stoi(startValue);
+
+    string rangeType = rangeNode.children[1].type;
+
+    string endValue = evaluateExpression(rangeNode.children[2].children[0]);
+    int end = stoi(endValue);
+
+    int step = 1;
+    if (node.children.size() > 3)
+    {
+        string stepValue = evaluateExpression(node.children[2].children[0]);
+        step = stoi(stepValue);
+    }
+
+    const ASTNode &body = node.children.back();
+
+    if (rangeType == "TO")
+    {
+        for (int i = start; i <= end; i += step)
+        {
+            setVariableValue(identifier, to_string(i), "INTEGER");
+            evaluateBody(body);
+        }
+    }
+    else if (rangeType == "DOWNTO")
+    {
+        for (int i = start; i >= end; i -= step)
+        {
+            setVariableValue(identifier, to_string(i), "INTEGER");
+            evaluateBody(body);
+        }
+    }
+    else if (rangeType == "UNTIL")
+    {
+        for (int i = start; i < end; i += step)
+        {
+            setVariableValue(identifier, to_string(i), "INTEGER");
+            evaluateBody(body);
+        }
+    }
+    else if (rangeType == "DOWNUNTIL")
+    {
+        for (int i = start; i > end; i -= step)
+        {
+            setVariableValue(identifier, to_string(i), "INTEGER");
+            evaluateBody(body);
+        }
+    }
+    else
+    {
+        throw runtime_error("Invalid range type in for loop: " + rangeType);
     }
 }
