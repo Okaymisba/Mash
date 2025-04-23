@@ -349,9 +349,8 @@ ASTNode Parser::parseFunction()
     Function.children.push_back(Parameters);
 
     // Function body
-    ASTNode parseFunctionBody = parseBody(); 
+    ASTNode parseFunctionBody = parseBody();
     Function.children.push_back(parseFunctionBody);
 
     return Function;
 }
-
