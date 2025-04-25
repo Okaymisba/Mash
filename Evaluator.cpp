@@ -235,57 +235,56 @@ void Evaluator::evaluateWhileLoop(const ASTNode &node)
 
 void Evaluator::evaluateForLoop(const ASTNode &node)
 {
-    string identifier = node.children[0].value;
-
+    const string &identifier = node.children[0].value;
     const ASTNode &rangeNode = node.children[1];
+    const ASTNode &body = node.children.back();
 
-    string startValue = evaluateExpression(rangeNode.children[0].children[0]);
-    int start = stoi(startValue);
-
-    string rangeType = rangeNode.children[1].type;
-
-    string endValue = evaluateExpression(rangeNode.children[2].children[0]);
-    int end = stoi(endValue);
+    int start = stoi(evaluateExpression(rangeNode.children[0].children[0]));
+    int end = stoi(evaluateExpression(rangeNode.children[2].children[0]));
 
     int step = 1;
     if (node.children.size() > 3)
     {
-        string stepValue = evaluateExpression(node.children[2].children[0]);
-        step = stoi(stepValue);
+        step = stoi(evaluateExpression(node.children[2].children[0]));
     }
 
-    const ASTNode &body = node.children.back();
+    const string &rangeType = rangeNode.children[1].type;
+
+    char numBuffer[32];
+
+    auto setVarAndEval = [&](int val)
+    {
+        sprintf(numBuffer, "%d", val);
+        setVariableValue(identifier, numBuffer, "INTEGER");
+        evaluateBody(body);
+    };
 
     if (rangeType == "TO")
     {
         for (int i = start; i <= end; i += step)
         {
-            setVariableValue(identifier, to_string(i), "INTEGER");
-            evaluateBody(body);
+            setVarAndEval(i);
         }
     }
     else if (rangeType == "DOWNTO")
     {
         for (int i = start; i >= end; i -= step)
         {
-            setVariableValue(identifier, to_string(i), "INTEGER");
-            evaluateBody(body);
+            setVarAndEval(i);
         }
     }
     else if (rangeType == "UNTIL")
     {
         for (int i = start; i < end; i += step)
         {
-            setVariableValue(identifier, to_string(i), "INTEGER");
-            evaluateBody(body);
+            setVarAndEval(i);
         }
     }
     else if (rangeType == "DOWNUNTIL")
     {
         for (int i = start; i > end; i -= step)
         {
-            setVariableValue(identifier, to_string(i), "INTEGER");
-            evaluateBody(body);
+            setVarAndEval(i);
         }
     }
     else
