@@ -34,6 +34,14 @@ ASTNode Parser::parseBody()
             body.children.push_back(statement);
         }
     }
+    if (peek().type == "RETURN")
+    {
+        consume("RETURN");
+        ASTNode Return("RETURN");
+        ASTNode returnExpression = parseExpression();
+        Return.children.push_back(returnExpression);
+        body.children.push_back(Return);
+    }
 
     consume("CLOSE_CURLY_BRACKET");
 

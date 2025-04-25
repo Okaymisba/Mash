@@ -238,6 +238,10 @@ ASTNode Parser::parseStatement()
     {
         return parseForLoop();
     }
+    else if (token.type == "FUNCTION")
+    {
+        return parseFunction();
+    }
     else
     {
         throw runtime_error("Invalid statement: unexpected token " + token.type);
@@ -306,4 +310,47 @@ ASTNode Parser::parseForLoop()
     ForNode.children.push_back(body);
 
     return ForNode;
+}
+ASTNode Parser::parseFunction()
+{
+    consume("FUNCTION");
+
+    ASTNode Function("FUNCTION");
+
+    // Function name
+    Token FunctName = consume("IDENTIFIER");
+    Function.children.push_back(ASTNode(FunctName.type, FunctName.value));
+
+    consume("OPEN_ROUND_BRACKET");
+
+    // Parameters node
+    ASTNode Parameters("PARAMETERS");
+
+    if (peek().type != "CLOSE_ROUND_BRACKET")
+    {
+        // Parse first parameter
+        Token par_type = consume("TYPE");
+        Token par = consume("IDENTIFIER");
+        Parameters.children.push_back(ASTNode(par_type.type, par_type.value));
+        Parameters.children.push_back(ASTNode(par.type, par.value));
+
+        // Parse additional parameters
+        while (peek().type == "COMMA")
+        {
+            consume("COMMA");
+            Token par_type2 = consume("TYPE");
+            Token par2 = consume("IDENTIFIER");
+            Parameters.children.push_back(ASTNode(par_type2.type, par_type2.value));
+            Parameters.children.push_back(ASTNode(par2.type, par2.value));
+        }
+    }
+
+    consume("CLOSE_ROUND_BRACKET");
+    Function.children.push_back(Parameters);
+
+    // Function body
+    ASTNode parseFunctionBody = parseBody();
+    Function.children.push_back(parseFunctionBody);
+
+    return Function;
 }
