@@ -1,4 +1,5 @@
 #include "../../Parser.h"
+#include<iostream>
 
 /**
  * @return An AST node representing the body of a block
@@ -30,11 +31,19 @@
          }
          else if (peek().type == "RETURN")
          {
-             consume("RETURN");
-             ASTNode Return("RETURN");
-             ASTNode returnExpression = parseExpression();
-             Return.children.push_back(returnExpression);
-             body.children.push_back(Return);
+            if(insideFunction){
+
+                consume("RETURN");
+                ASTNode Return("RETURN");
+                ASTNode returnExpression = parseExpression();
+                Return.children.push_back(returnExpression);
+                body.children.push_back(Return);
+                consume("SEMICOLON");
+            }
+            else{
+                throw runtime_error("return only allowed in functions");
+                
+            }
          }
          else
          {

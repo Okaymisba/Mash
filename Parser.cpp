@@ -154,6 +154,7 @@ ASTNode Parser::parseIfStatement()
     ASTNode ifNode("IF");
     ASTNode condition = parseCondition(); // parseCondition() in func/parseCondition/parseCondition.cpp
     ifNode.children.push_back(condition);
+    insideFunction = false;
     ASTNode body = parseBody(); // parseBody() in func/parseBody/parseBody.cpp
     ifNode.children.push_back(body);
     ifStatement.children.push_back(ifNode);
@@ -164,6 +165,7 @@ ASTNode Parser::parseIfStatement()
         ASTNode elseIfNode("ELSE IF");
         ASTNode condition = parseCondition(); // parseCondition() in func/parseCondition/parseCondition.cpp
         elseIfNode.children.push_back(condition);
+        insideFunction = false;
         ASTNode body = parseBody(); // parseBody() in func/parseBody/parseBody.cpp
         elseIfNode.children.push_back(body);
         ifStatement.children.push_back(elseIfNode);
@@ -173,6 +175,7 @@ ASTNode Parser::parseIfStatement()
     {
         consume("ELSE");
         ASTNode elseNode("ELSE");
+        insideFunction = false;
         ASTNode body = parseBody(); // parseBody() in func/parseBody/parseBody.cpp
         elseNode.children.push_back(body);
         ifStatement.children.push_back(elseNode);
@@ -198,6 +201,7 @@ ASTNode Parser::parseWhileLoop()
     ASTNode whileNode("WHILE");
     ASTNode condition = parseCondition(); // parseCondition() in func/parseCondition/parseCondition.cpp
     whileNode.children.push_back(condition);
+    insideFunction = false;
     ASTNode body = parseBody(); // parseBody() in func/parseBody/parseBody.cpp
     whileNode.children.push_back(body);
     return whileNode;
@@ -306,13 +310,14 @@ ASTNode Parser::parseForLoop()
     }
     consume("CLOSE_ROUND_BRACKET");
 
+    insideFunction = false;
     ASTNode body = parseBody(); // parseBody() in func/parseBody/ParseBody.cpp
     ForNode.children.push_back(body);
 
     return ForNode;
 }
 ASTNode Parser::parseFunction()
-{
+{   
     consume("FUNCTION");
 
     ASTNode Function("FUNCTION");
@@ -349,6 +354,7 @@ ASTNode Parser::parseFunction()
     Function.children.push_back(Parameters);
 
     // Function body
+    insideFunction = true;
     ASTNode parseFunctionBody = parseBody();
     Function.children.push_back(parseFunctionBody);
 
