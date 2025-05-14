@@ -17,6 +17,7 @@ public:
 private:
     vector<Token> tokens;
     size_t currentIndex;
+    bool insideFunction;
 
     Token peek();
 
