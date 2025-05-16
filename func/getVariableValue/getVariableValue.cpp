@@ -12,6 +12,13 @@
 
 string Evaluator::getVariableValue(const string &identifier)
 {
+    // Check local variables first
+    if (variables.find(identifier) != variables.end())
+    {
+        return variables[identifier];
+    }
+
+    // Check global type-specific maps
     if (intVariables.find(identifier) != intVariables.end())
     {
         return to_string(intVariables[identifier]);

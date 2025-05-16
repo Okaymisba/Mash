@@ -218,25 +218,53 @@ ASTNode Parser::parseWhileLoop()
  * @return An Abstract Syntax Tree node representing the parsed statement.
  * @throws runtime_error If the token type is not a valid statement type.
  */
+ASTNode Parser::parseFunctionCall()
+{
+    Token functionName = consume("IDENTIFIER");
+    ASTNode functionCall("FUNCTION_CALL", functionName.value);
 
+    consume("OPEN_ROUND_BRACKET");
+
+    while (peek().type != "CLOSE_ROUND_BRACKET")
+    {
+        ASTNode argument = parseExpression(); // Parse each argument
+        functionCall.children.push_back(argument);
+
+        if (peek().type == "COMMA")
+        {
+            consume("COMMA");
+        }
+    }
+
+    consume("CLOSE_ROUND_BRACKET");
+
+    return functionCall;
+}
 ASTNode Parser::parseStatement()
 {
     Token token = peek();
+
     if (token.type == "PRINT")
     {
-        return parsePrintStatement(); // parsePrintStatement() in Parser.cpp
+        return parsePrintStatement();
+    }
+    else if (token.type == "IDENTIFIER" && currentIndex + 1 < tokens.size() && tokens[currentIndex + 1].type == "OPEN_ROUND_BRACKET")
+    {
+        // If the IDENTIFIER is followed by an OPEN_ROUND_BRACKET, it's a function call
+        return parseFunctionCall();
     }
     else if (token.type == "IDENTIFIER")
     {
-        return parseAssignment(); // parseAssignment() in Parser.cpp
+        // Otherwise, treat it as an assignment
+        return parseAssignment();
     }
     else if (token.type == "CHECK_IF")
     {
-        return parseIfStatement(); // parseIfStatement() in Parser.cpp
+        return parseIfStatement();
     }
     else if (token.type == "WHILE")
     {
-        return parseWhileLoop(); // parseWhileLoop() in Parser.cpp
+        return parseWhileLoop();
     }
     else if (token.type == "FOR")
     {
@@ -317,7 +345,7 @@ ASTNode Parser::parseForLoop()
     return ForNode;
 }
 ASTNode Parser::parseFunction()
-{   
+{
     consume("FUNCTION");
 
     ASTNode Function("FUNCTION");
@@ -334,19 +362,39 @@ ASTNode Parser::parseFunction()
     if (peek().type != "CLOSE_ROUND_BRACKET")
     {
         // Parse first parameter
-        Token par_type = consume("TYPE");
-        Token par = consume("IDENTIFIER");
-        Parameters.children.push_back(ASTNode(par_type.type, par_type.value));
-        Parameters.children.push_back(ASTNode(par.type, par.value));
+        Token nextToken = peek();
+        if (nextToken.type == "TYPE")
+        {
+            Token par_type = consume("TYPE");
+            Token par = consume("IDENTIFIER");
+            Parameters.children.push_back(ASTNode(par_type.type, par_type.value));
+            Parameters.children.push_back(ASTNode(par.type, par.value));
+        }
+        else if (nextToken.type == "IDENTIFIER")
+        {
+            Token par = consume("IDENTIFIER");
+            Parameters.children.push_back(ASTNode("TYPE", "INTEGER")); // Default type
+            Parameters.children.push_back(ASTNode(par.type, par.value));
+        }
 
         // Parse additional parameters
         while (peek().type == "COMMA")
         {
             consume("COMMA");
-            Token par_type2 = consume("TYPE");
-            Token par2 = consume("IDENTIFIER");
-            Parameters.children.push_back(ASTNode(par_type2.type, par_type2.value));
-            Parameters.children.push_back(ASTNode(par2.type, par2.value));
+            nextToken = peek();
+            if (nextToken.type == "TYPE")
+            {
+                Token par_type2 = consume("TYPE");
+                Token par2 = consume("IDENTIFIER");
+                Parameters.children.push_back(ASTNode(par_type2.type, par_type2.value));
+                Parameters.children.push_back(ASTNode(par2.type, par2.value));
+            }
+            else if (nextToken.type == "IDENTIFIER")
+            {
+                Token par2 = consume("IDENTIFIER");
+                Parameters.children.push_back(ASTNode("TYPE", "INTEGER")); // Default type
+                Parameters.children.push_back(ASTNode(par2.type, par2.value));
+            }
         }
     }
 
