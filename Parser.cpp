@@ -27,7 +27,7 @@ ASTNode Parser::parse()
         }
         else
         {
-            ASTNode statement = parseStatement(); // parseStatement() in Parcer.cpp
+            ASTNode statement = parseStatement();
             root.children.push_back(statement);
             if (peek().type == "SEMICOLON")
             {
@@ -68,8 +68,7 @@ ASTNode Parser::parseAssignment()
 
         consume("ASSIGN");
 
-        // Wraping arithmetic expressions inside an EXPRESSION node
-        ASTNode expressionNode = parseExpression(); // parseExpression() in func/parseExpression/parseExpression.cpp
+        ASTNode expressionNode = parseExpression();
         if (ValidateDataType(identifierNode, expressionNode))
         {
             assignment.children.push_back(expressionNode);
@@ -89,8 +88,7 @@ ASTNode Parser::parseAssignment()
 
         consume("ASSIGN");
 
-        // Wraping arithmetic expressions inside an EXPRESSION node
-        ASTNode expressionNode = parseExpression(); // parseExpression() in func/parseExpression/parseExpression.cpp
+        ASTNode expressionNode = parseExpression();
         assignment.children.push_back(expressionNode);
 
         consume("SEMICOLON");
@@ -119,7 +117,7 @@ ASTNode Parser::parsePrintStatement()
 
     while (peek().type != "CLOSE_ROUND_BRACKET")
     {
-        ASTNode expression = parseExpression(); // parseExpression() in func/parseExpression/parseExpression.cpp
+        ASTNode expression = parseExpression();
         printNode.children.push_back(expression);
     }
 
@@ -152,10 +150,10 @@ ASTNode Parser::parseIfStatement()
     ASTNode ifStatement("IF STATEMENT");
 
     ASTNode ifNode("IF");
-    ASTNode condition = parseCondition(); // parseCondition() in func/parseCondition/parseCondition.cpp
+    ASTNode condition = parseCondition();
     ifNode.children.push_back(condition);
     insideFunction = false;
-    ASTNode body = parseBody(); // parseBody() in func/parseBody/parseBody.cpp
+    ASTNode body = parseBody();
     ifNode.children.push_back(body);
     ifStatement.children.push_back(ifNode);
 
@@ -163,10 +161,10 @@ ASTNode Parser::parseIfStatement()
     {
         consume("ELSE IF");
         ASTNode elseIfNode("ELSE IF");
-        ASTNode condition = parseCondition(); // parseCondition() in func/parseCondition/parseCondition.cpp
+        ASTNode condition = parseCondition();
         elseIfNode.children.push_back(condition);
         insideFunction = false;
-        ASTNode body = parseBody(); // parseBody() in func/parseBody/parseBody.cpp
+        ASTNode body = parseBody();
         elseIfNode.children.push_back(body);
         ifStatement.children.push_back(elseIfNode);
     }
@@ -176,7 +174,7 @@ ASTNode Parser::parseIfStatement()
         consume("ELSE");
         ASTNode elseNode("ELSE");
         insideFunction = false;
-        ASTNode body = parseBody(); // parseBody() in func/parseBody/parseBody.cpp
+        ASTNode body = parseBody();
         elseNode.children.push_back(body);
         ifStatement.children.push_back(elseNode);
     }
@@ -199,10 +197,10 @@ ASTNode Parser::parseWhileLoop()
 {
     consume("WHILE");
     ASTNode whileNode("WHILE");
-    ASTNode condition = parseCondition(); // parseCondition() in func/parseCondition/parseCondition.cpp
+    ASTNode condition = parseCondition();
     whileNode.children.push_back(condition);
     insideFunction = false;
-    ASTNode body = parseBody(); // parseBody() in func/parseBody/parseBody.cpp
+    ASTNode body = parseBody();
     whileNode.children.push_back(body);
     return whileNode;
 }
@@ -227,7 +225,7 @@ ASTNode Parser::parseFunctionCall()
 
     while (peek().type != "CLOSE_ROUND_BRACKET")
     {
-        ASTNode argument = parseExpression(); // Parse each argument
+        ASTNode argument = parseExpression();
         functionCall.children.push_back(argument);
 
         if (peek().type == "COMMA")
@@ -250,12 +248,11 @@ ASTNode Parser::parseStatement()
     }
     else if (token.type == "IDENTIFIER" && currentIndex + 1 < tokens.size() && tokens[currentIndex + 1].type == "OPEN_ROUND_BRACKET")
     {
-        // If the IDENTIFIER is followed by an OPEN_ROUND_BRACKET, it's a function call
         return parseFunctionCall();
     }
     else if (token.type == "IDENTIFIER")
     {
-        // Otherwise, treat it as an assignment
+
         return parseAssignment();
     }
     else if (token.type == "CHECK_IF")
@@ -332,14 +329,14 @@ ASTNode Parser::parseForLoop()
     {
         consume("STEP");
         ASTNode step("STEP");
-        ASTNode step_value = parseExpression(); // Parse step expression
+        ASTNode step_value = parseExpression();
         step.children.push_back(step_value);
         ForNode.children.push_back(step);
     }
     consume("CLOSE_ROUND_BRACKET");
 
     insideFunction = false;
-    ASTNode body = parseBody(); // parseBody() in func/parseBody/ParseBody.cpp
+    ASTNode body = parseBody();
     ForNode.children.push_back(body);
 
     return ForNode;
@@ -348,63 +345,42 @@ ASTNode Parser::parseFunction()
 {
     consume("FUNCTION");
 
-    ASTNode Function("FUNCTION");
+    ASTNode functionNode("FUNCTION");
 
-    // Function name
-    Token FunctName = consume("IDENTIFIER");
-    Function.children.push_back(ASTNode(FunctName.type, FunctName.value));
+    Token functionName = consume("IDENTIFIER");
+    functionNode.children.push_back(ASTNode(functionName.type, functionName.value));
 
     consume("OPEN_ROUND_BRACKET");
 
-    // Parameters node
-    ASTNode Parameters("PARAMETERS");
+    ASTNode parametersNode("PARAMETERS");
 
     if (peek().type != "CLOSE_ROUND_BRACKET")
     {
-        // Parse first parameter
-        Token nextToken = peek();
-        if (nextToken.type == "TYPE")
+        while (true)
         {
-            Token par_type = consume("TYPE");
-            Token par = consume("IDENTIFIER");
-            Parameters.children.push_back(ASTNode(par_type.type, par_type.value));
-            Parameters.children.push_back(ASTNode(par.type, par.value));
-        }
-        else if (nextToken.type == "IDENTIFIER")
-        {
-            Token par = consume("IDENTIFIER");
-            Parameters.children.push_back(ASTNode("TYPE", "INTEGER")); // Default type
-            Parameters.children.push_back(ASTNode(par.type, par.value));
-        }
 
-        // Parse additional parameters
-        while (peek().type == "COMMA")
-        {
-            consume("COMMA");
-            nextToken = peek();
-            if (nextToken.type == "TYPE")
+            Token paramName = consume("IDENTIFIER");
+            ASTNode paramNode("PARAMETER");
+            paramNode.children.push_back(ASTNode("TYPE", "STRING"));
+            paramNode.children.push_back(ASTNode("IDENTIFIER", paramName.value));
+            parametersNode.children.push_back(paramNode);
+
+            if (peek().type == "COMMA")
             {
-                Token par_type2 = consume("TYPE");
-                Token par2 = consume("IDENTIFIER");
-                Parameters.children.push_back(ASTNode(par_type2.type, par_type2.value));
-                Parameters.children.push_back(ASTNode(par2.type, par2.value));
+                consume("COMMA");
             }
-            else if (nextToken.type == "IDENTIFIER")
+            else
             {
-                Token par2 = consume("IDENTIFIER");
-                Parameters.children.push_back(ASTNode("TYPE", "INTEGER")); // Default type
-                Parameters.children.push_back(ASTNode(par2.type, par2.value));
+                break;
             }
         }
     }
 
     consume("CLOSE_ROUND_BRACKET");
-    Function.children.push_back(Parameters);
+    functionNode.children.push_back(parametersNode);
 
-    // Function body
-    insideFunction = true;
-    ASTNode parseFunctionBody = parseBody();
-    Function.children.push_back(parseFunctionBody);
+    ASTNode bodyNode = parseBody();
+    functionNode.children.push_back(bodyNode);
 
-    return Function;
+    return functionNode;
 }

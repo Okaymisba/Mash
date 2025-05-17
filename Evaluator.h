@@ -8,12 +8,32 @@
 #include <regex> // Include regex for type checking
 
 using namespace std;
+#include <exception>
+#include <string>
 
+class ReturnException : public std::exception
+{
+private:
+    std::string returnValue;
+
+public:
+    explicit ReturnException(const std::string &value) : returnValue(value) {}
+
+    const char *what() const noexcept override
+    {
+        return "ReturnException";
+    }
+
+    std::string value() const
+    {
+        return returnValue;
+    }
+};
 class Evaluator
 {
 public:
     void evaluate(const ASTNode &node);
-    void evaluateFunctionCall(const ASTNode &node);
+    string evaluateFunctionCall(const ASTNode &node);
 
 private:
     map<string, int> intVariables;
@@ -24,8 +44,8 @@ private:
     map<string, string> stringVariables;
     map<string, char> charVariables;
 
-    map<string, ASTNode> functions; // Map to store function definitions
-    map<string, string> variables;  // Map to store local variables
+    map<string, ASTNode> functions; 
+    map<string, string> variables;  
 
     string evaluateExpression(const ASTNode &node);
     string evaluateAssignment(const ASTNode &node);
@@ -40,14 +60,14 @@ private:
     string getVariableValue(const string &identifier);
     void setVariableValue(const string &identifier, const string &value, const string &type);
 
-    // Add helper functions for type checking
+    
     bool isInteger(const string &value);
     bool isFloat(const string &value);
-    bool isBool(const string &value);   // Add this declaration
-    bool isChar(const string &value);   // Add this declaration
-    bool isString(const string &value); // Add this declaration
-    bool isLong(const string &value);   // Add this declaration
-    bool isDouble(const string &value); // Add this declaration
+    bool isBool(const string &value);  
+    bool isChar(const string &value);   
+    bool isString(const string &value); 
+    bool isLong(const string &value);  
+    bool isDouble(const string &value); 
 };
 
 #endif

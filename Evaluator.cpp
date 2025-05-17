@@ -44,9 +44,9 @@ void Evaluator::evaluate(const ASTNode &node)
     }
     else if (node.type == "FUNCTION")
     {
-        // Store the function definition in the functions map
-        string functionName = node.children[0].value; // Function name
-        functions[functionName] = node;               // Store the entire function node
+
+        string functionName = node.children[0].value;
+        functions[functionName] = node;
     }
     else if (node.type == "FUNCTION_CALL")
     {
@@ -319,29 +319,28 @@ bool Evaluator::isBool(const string &value)
 
 bool Evaluator::isChar(const string &value)
 {
-    return value.size() == 1; // Assuming single characters are valid
+    return value.size() == 1;
 }
 
 bool Evaluator::isString(const string &value)
 {
-    return !value.empty(); // Any non-empty value can be treated as a string
+    return !value.empty();
 }
 
 bool Evaluator::isLong(const string &value)
 {
-    return isInteger(value); // Reuse isInteger for now
+    return isInteger(value);
 }
 
 bool Evaluator::isDouble(const string &value)
 {
-    return isFloat(value); // Reuse isFloat for now
+    return isFloat(value);
 }
 
-void Evaluator::evaluateFunctionCall(const ASTNode &node)
+string Evaluator::evaluateFunctionCall(const ASTNode &node)
 {
     string functionName = node.value;
 
-    // Check if the function is defined
     if (functions.find(functionName) == functions.end())
     {
         throw runtime_error("Undefined function: " + functionName);
@@ -349,12 +348,10 @@ void Evaluator::evaluateFunctionCall(const ASTNode &node)
 
     ASTNode functionDefinition = functions[functionName];
 
-    // Get the parameters and body of the function
     ASTNode parameters = functionDefinition.children[1];
     ASTNode body = functionDefinition.children[2];
 
-    // Map arguments to parameters
-    if (parameters.children.size() / 2 != node.children.size())
+    if (parameters.children.size() != node.children.size())
     {
         throw runtime_error("Argument count mismatch for function: " + functionName);
     }
@@ -363,52 +360,40 @@ void Evaluator::evaluateFunctionCall(const ASTNode &node)
 
     for (size_t i = 0; i < node.children.size(); ++i)
     {
-        string paramType = parameters.children[i * 2].value;     // Type (e.g., INTEGER, FLOAT)
-        string paramName = parameters.children[i * 2 + 1].value; // Parameter name
-        string argValue = evaluateExpression(node.children[i]);  // Evaluate argument
-
-        // Infer type if necessary
-        if (paramType == "INTEGER" || paramType.empty())
+        string paramName = parameters.children[i].children[1].value;
+        string argValue = evaluateExpression(node.children[i]);
+        string paramType;
+        if (isInteger(argValue))
         {
-            if (isInteger(argValue))
-            {
-                localVariables[paramName] = argValue;
-            }
-            else
-            {
-                throw runtime_error("Type mismatch: expected INTEGER for parameter " + paramName);
-            }
+            paramType = "INTEGER";
         }
-        else if (paramType == "FLOAT")
+        else if (isFloat(argValue))
         {
-            if (isFloat(argValue))
-            {
-                localVariables[paramName] = argValue;
-            }
-            else
-            {
-                throw runtime_error("Type mismatch: expected FLOAT for parameter " + paramName);
-            }
-        }
-        else if (paramType == "STRING")
-        {
-            localVariables[paramName] = argValue;
+            paramType = "FLOAT";
         }
         else
         {
-            throw runtime_error("Unsupported parameter type: " + paramType);
+            paramType = "STRING";
         }
+
+        setVariableValue(paramName, argValue, paramType);
     }
 
-    // Save the current variable state
     auto savedVariables = variables;
 
-    // Set local variables
     variables = localVariables;
 
-    // Evaluate the function body
-    evaluateBody(body);
+    string result;
+    try
+    {
+        result = evaluateBody(body);
+    }
+    catch (const ReturnException &e)
+    {
+        result = e.value();
+    }
 
-    // Restore the previous variable state
     variables = savedVariables;
+
+    return result;
 }
