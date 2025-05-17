@@ -238,6 +238,17 @@ ASTNode Parser::parseFunctionCall()
 
     return functionCall;
 }
+
+/**
+ * Parses a statement from the token stream and returns an Abstract Syntax Tree node.
+ *
+ * This function determines the type of statement based on the current token and
+ * delegates the parsing to the appropriate specific parse function. If the token
+ * type does not match any recognized statement type, a runtime error is thrown.
+ *
+ * @return An Abstract Syntax Tree node representing the parsed statement.
+ * @throws runtime_error If the token type is not a valid statement type.
+ */
 ASTNode Parser::parseStatement()
 {
     Token token = peek();
@@ -245,6 +256,10 @@ ASTNode Parser::parseStatement()
     if (token.type == "PRINT")
     {
         return parsePrintStatement();
+    }
+    else if (token.type == "RETURN")
+    {
+        return parseReturnStatement();
     }
     else if (token.type == "IDENTIFIER" && currentIndex + 1 < tokens.size() && tokens[currentIndex + 1].type == "OPEN_ROUND_BRACKET")
     {
@@ -341,6 +356,17 @@ ASTNode Parser::parseForLoop()
 
     return ForNode;
 }
+
+/**
+ * Parses a function definition and returns an Abstract Syntax Tree node.
+ * This function parses a function definition which consists of a function name,
+ * parameter list, and a body. The function name is parsed as an identifier and
+ * added as a child of the function node. The parameter list is parsed as a
+ * comma-separated list of identifiers, with each parameter parsed as a separate
+ * node of type "PARAMETER". The body is parsed as a separate node of type "BODY"
+ * by calling the parseFuncBody() function.
+ * @return An Abstract Syntax Tree node representing the function definition
+ */
 ASTNode Parser::parseFunction()
 {
     consume("FUNCTION");
@@ -379,7 +405,7 @@ ASTNode Parser::parseFunction()
     consume("CLOSE_ROUND_BRACKET");
     functionNode.children.push_back(parametersNode);
 
-    ASTNode bodyNode = parseBody();
+    ASTNode bodyNode = parseFuncBody();
     functionNode.children.push_back(bodyNode);
 
     return functionNode;
