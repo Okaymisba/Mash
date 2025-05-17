@@ -43,6 +43,10 @@ private:
 
     ASTNode parseBody();
 
+    ASTNode parseFuncBody();
+
+    ASTNode parseReturnStatement();
+
     ASTNode parseStatement();
 
     ASTNode parseForLoop();

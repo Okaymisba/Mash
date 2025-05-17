@@ -2,21 +2,28 @@
 #include <stdexcept>
 
 /**
- * Parses an arithmetic expression and returns an Abstract Syntax Tree node.
+ * Parses an expression and returns an Abstract Syntax Tree node.
  *
- * This function parses an expression, which is a sequence of terms separated
- * by arithmetic operators. It first parses a term as the left operand, then
- * continues to parse an operator and a term as the right operand, wrapping the
- * parsed operators and operands in an AST node of type EXPRESSION. The
- * expression is parsed until it encounters a token that is not an arithmetic
- * operator, at which point it returns the parsed expression.
+ * This function parses an expression from the token stream, using the
+ * precedence climbing algorithm to handle operator precedence.
+ * The function takes an optional minimum precedence argument, which
+ * is used to determine when to stop parsing.
  *
+ * @param minPrecedence The minimum precedence to parse, defaulting to 0.
  * @return An Abstract Syntax Tree node representing the parsed expression.
  */
-
 ASTNode Parser::parseExpression(int minPrecedence)
 {
-    ASTNode left = parseTerm();
+    ASTNode left;
+
+    if (peek().type == "IDENTIFIER" && currentIndex + 1 < tokens.size() && tokens[currentIndex + 1].type == "OPEN_ROUND_BRACKET")
+    {
+        left = parseFunctionCall(); 
+    }
+    else
+    {
+        left = parseTerm();
+    }
 
     while (true)
     {
