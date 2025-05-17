@@ -1,0 +1,15 @@
+PROGRAM
+  FOR
+    IDENTIFIER (i)
+    RANGE
+      START
+        INTEGER (10)
+      UNTIL
+      END
+        INTEGER (20)
+    BODY
+      PRINT
+        EXPRESSION
+          IDENTIFIER (i)
+          ARITHMETIC_OPERATOR (-)
+          INTEGER (1)

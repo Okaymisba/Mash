@@ -13,6 +13,8 @@ public:
     explicit Parser(const vector<Token> &tokens) : tokens(tokens), currentIndex(0) {}
 
     ASTNode parse();
+    string toString(const ASTNode&node,int indent = 0) const;
+
 
 private:
     vector<Token> tokens;
@@ -48,6 +50,10 @@ private:
     ASTNode parseForLoop();
 
     ASTNode parseFunction();
+
+
+
+
 };
 
 #endif

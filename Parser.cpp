@@ -317,7 +317,7 @@ ASTNode Parser::parseForLoop()
     return ForNode;
 }
 ASTNode Parser::parseFunction()
-{   
+{
     consume("FUNCTION");
 
     ASTNode Function("FUNCTION");

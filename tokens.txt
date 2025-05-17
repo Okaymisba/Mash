@@ -1,0 +1,20 @@
+Token Type: FOR, Token Value: for
+Token Type: OPEN_ROUND_BRACKET, Token Value: (
+Token Type: IDENTIFIER, Token Value: i
+Token Type: IN, Token Value: in
+Token Type: INTEGER, Token Value: 10
+Token Type: UNTIL, Token Value: until
+Token Type: INTEGER, Token Value: 20
+Token Type: CLOSE_ROUND_BRACKET, Token Value: )
+Token Type: OPEN_CURLY_BRACKET, Token Value: {
+Token Type: LINE_BREAK, Token Value: \n
+Token Type: PRINT, Token Value: print
+Token Type: OPEN_ROUND_BRACKET, Token Value: (
+Token Type: IDENTIFIER, Token Value: i
+Token Type: ARITHMETIC_OPERATOR, Token Value: -
+Token Type: INTEGER, Token Value: 1
+Token Type: CLOSE_ROUND_BRACKET, Token Value: )
+Token Type: SEMICOLON, Token Value: ;
+Token Type: LINE_BREAK, Token Value: \n
+Token Type: CLOSE_CURLY_BRACKET, Token Value: }
+Token Type: EOF, Token Value: 
