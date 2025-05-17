@@ -16,6 +16,10 @@ string Evaluator::evaluateExpression(const ASTNode &node)
     {
         return node.value;
     }
+    else if (node.type == "STRING" || node.type == "CHAR")
+    {
+        return node.value;
+    }
     else if (node.type == "IDENTIFIER")
     {
         return getVariableValue(node.value);
