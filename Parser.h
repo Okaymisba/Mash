@@ -47,6 +47,8 @@ private:
 
     ASTNode parseForLoop();
 
+    ASTNode parseFunctionCall();
+
     ASTNode parseFunction();
 };
 

@@ -47,7 +47,7 @@ vector<Token> Tokenizer::tokenize(const string &input)
         {"CONTINUE", R"(\bcontinue\b)"},
         {"PRINT", R"(\bprint\b)"},
         {"RETURN", R"(\breturn\b)"},
-        {"FUNCTION", R"(\bfunction\b)"},
+        {"FUNCTION", R"(\bfun\b)"},
         {"NULL", R"(\bnull\b)"},
         {"BOOL", R"(\btrue\b|\bfalse\b)"},
         {"CHAR", R"('(?:[^'\\]|\\.)')"},
@@ -107,16 +107,16 @@ vector<Token> Tokenizer::tokenize(const string &input)
                 }
                 else if (type == "STRING")
                 {
-                    if (value.length() >= 2) 
+                    if (value.length() >= 2)
                     {
-                        value = value.substr(1, value.length() - 2); 
+                        value = value.substr(1, value.length() - 2);
                     }
                 }
                 else if (type == "CHAR")
                 {
-                    if (value.length() == 3) 
+                    if (value.length() == 3)
                     {
-                        value = value.substr(1, 1); 
+                        value = value.substr(1, 1);
                     }
                 }
 

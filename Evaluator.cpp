@@ -42,6 +42,16 @@ void Evaluator::evaluate(const ASTNode &node)
     {
         evaluateForLoop(node);
     }
+    else if (node.type == "FUNCTION")
+    {
+        // Store the function definition in the functions map
+        string functionName = node.children[0].value; // Function name
+        functions[functionName] = node;               // Store the entire function node
+    }
+    else if (node.type == "FUNCTION_CALL")
+    {
+        evaluateFunctionCall(node);
+    }
     else
     {
         throw runtime_error("Unknown node type: " + node.type);
@@ -291,4 +301,114 @@ void Evaluator::evaluateForLoop(const ASTNode &node)
     {
         throw runtime_error("Invalid range type in for loop: " + rangeType);
     }
+}
+bool Evaluator::isInteger(const string &value)
+{
+    return regex_match(value, regex("^-?\\d+$"));
+}
+
+bool Evaluator::isFloat(const string &value)
+{
+    return regex_match(value, regex("^-?\\d*\\.\\d+$"));
+}
+
+bool Evaluator::isBool(const string &value)
+{
+    return value == "true" || value == "false";
+}
+
+bool Evaluator::isChar(const string &value)
+{
+    return value.size() == 1; // Assuming single characters are valid
+}
+
+bool Evaluator::isString(const string &value)
+{
+    return !value.empty(); // Any non-empty value can be treated as a string
+}
+
+bool Evaluator::isLong(const string &value)
+{
+    return isInteger(value); // Reuse isInteger for now
+}
+
+bool Evaluator::isDouble(const string &value)
+{
+    return isFloat(value); // Reuse isFloat for now
+}
+
+void Evaluator::evaluateFunctionCall(const ASTNode &node)
+{
+    string functionName = node.value;
+
+    // Check if the function is defined
+    if (functions.find(functionName) == functions.end())
+    {
+        throw runtime_error("Undefined function: " + functionName);
+    }
+
+    ASTNode functionDefinition = functions[functionName];
+
+    // Get the parameters and body of the function
+    ASTNode parameters = functionDefinition.children[1];
+    ASTNode body = functionDefinition.children[2];
+
+    // Map arguments to parameters
+    if (parameters.children.size() / 2 != node.children.size())
+    {
+        throw runtime_error("Argument count mismatch for function: " + functionName);
+    }
+
+    map<string, string> localVariables;
+
+    for (size_t i = 0; i < node.children.size(); ++i)
+    {
+        string paramType = parameters.children[i * 2].value;     // Type (e.g., INTEGER, FLOAT)
+        string paramName = parameters.children[i * 2 + 1].value; // Parameter name
+        string argValue = evaluateExpression(node.children[i]);  // Evaluate argument
+
+        // Infer type if necessary
+        if (paramType == "INTEGER" || paramType.empty())
+        {
+            if (isInteger(argValue))
+            {
+                localVariables[paramName] = argValue;
+            }
+            else
+            {
+                throw runtime_error("Type mismatch: expected INTEGER for parameter " + paramName);
+            }
+        }
+        else if (paramType == "FLOAT")
+        {
+            if (isFloat(argValue))
+            {
+                localVariables[paramName] = argValue;
+            }
+            else
+            {
+                throw runtime_error("Type mismatch: expected FLOAT for parameter " + paramName);
+            }
+        }
+        else if (paramType == "STRING")
+        {
+            localVariables[paramName] = argValue;
+        }
+        else
+        {
+            throw runtime_error("Unsupported parameter type: " + paramType);
+        }
+    }
+
+    // Save the current variable state
+    auto savedVariables = variables;
+
+    // Set local variables
+    variables = localVariables;
+
+    // Evaluate the function body
+    evaluateBody(body);
+
+    // Restore the previous variable state
+    variables = savedVariables;
 }
