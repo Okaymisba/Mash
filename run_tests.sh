@@ -1,6 +1,6 @@
 #!/bin/bash
 
-g++ main.cpp Tokenizer.cpp Evaluator.cpp Parser.cpp func/readFile/readFile.cpp func/parseCondition/parseCondition.cpp func/parseBody/parseBody.cpp func/parseExpression/parseExpression.cpp func/peek/peek.cpp func/consume/consume.cpp func/parseTerm/parseTerm.cpp func/hasCorrectExtension/hasCorrectExtension.cpp func/getPrecedence/getPrecedence.cpp func/evaluateBody/evaluateBody.cpp func/evaluateCondition/evaluateCondition.cpp func/evaluateExpression/evaluateExpression.cpp func/getVariableValue/getVariableValue.cpp func/setVariableValue/setVariableValue.cpp func/performArithmetic/performArithmetic.cpp func/ValidateDataType/ValidateDataType.cpp -o mash
+g++ main.cpp Tokenizer.cpp Evaluator.cpp Parser.cpp func/readFile/readFile.cpp func/parseCondition/parseCondition.cpp func/parseBody/parseBody.cpp func/parseExpression/parseExpression.cpp func/peek/peek.cpp func/consume/consume.cpp func/parseTerm/parseTerm.cpp func/hasCorrectExtension/hasCorrectExtension.cpp func/getPrecedence/getPrecedence.cpp func/evaluateBody/evaluateBody.cpp func/evaluateCondition/evaluateCondition.cpp func/evaluateExpression/evaluateExpression.cpp func/getVariableValue/getVariableValue.cpp func/setVariableValue/setVariableValue.cpp func/performArithmetic/performArithmetic.cpp func/ValidateDataType/ValidateDataType.cpp func/parseFuncBody/parseFuncBody.cpp -o mash
 
 function run_test() {
   FILE=$1
