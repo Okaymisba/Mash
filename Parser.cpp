@@ -384,10 +384,20 @@ ASTNode Parser::parseFunction()
     {
         while (true)
         {
+            Token paramType = (peek().type == "TYPE") ? consume("TYPE") : Token("TYPE", ""); 
 
-            Token paramName = consume("IDENTIFIER");
+            Token paramName = consume("IDENTIFIER"); 
             ASTNode paramNode("PARAMETER");
-            paramNode.children.push_back(ASTNode("TYPE", "STRING"));
+
+            if (paramType.type != "") 
+            {
+                paramNode.children.push_back(ASTNode("TYPE", paramType.value));
+            }
+            else
+            {
+                paramNode.children.push_back(ASTNode("TYPE", "ANY")); 
+            }
+
             paramNode.children.push_back(ASTNode("IDENTIFIER", paramName.value));
             parametersNode.children.push_back(paramNode);
 
