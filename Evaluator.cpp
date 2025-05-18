@@ -137,18 +137,22 @@ string Evaluator::evaluateAssignment(const ASTNode &node)
 }
 
 /**
- * Evaluates a print statement and outputs the result.
+ * Evaluates a print statement by printing the values of its children to the console.
  *
- * This function iterates through the children of the given AST node
- * and evaluates each child based on its type. The evaluated result is printed to the standard output.
- * If an unsupported expression type is encountered, a runtime error
- * is thrown.
+ * This function evaluates a print statement by iterating over its children and
+ * printing their values to the console. The value of each child is determined
+ * by its type:
+ * - `NUMBER`, `INTEGER`, `FLOAT`, `DOUBLE`: The numerical value is printed as is.
+ * - `IDENTIFIER`: The value of the variable with the given name is printed.
+ * - `EXPRESSION`: The expression is evaluated and its result is printed.
+ * - `STRING`: The string value is printed as is.
+ * - `FUNCTION_CALL`: The function is called and its return value is printed.
+ * - Other types: A runtime error is thrown because the expression type is not supported.
  *
  * @param node The Abstract Syntax Tree node representing the print statement.
  * @return An empty string.
  * @throws runtime_error If an unsupported expression type is encountered.
  */
-
 string Evaluator::evaluatePrint(const ASTNode &node)
 {
     for (const auto &child : node.children)
@@ -168,6 +172,10 @@ string Evaluator::evaluatePrint(const ASTNode &node)
         else if (child.type == "STRING")
         {
             cout << child.value;
+        }
+        else if (child.type == "FUNCTION_CALL")
+        {
+            cout << evaluateFunctionCall(child);
         }
         else
         {
