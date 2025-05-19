@@ -155,6 +155,12 @@ string Evaluator::evaluateAssignment(const ASTNode &node)
  */
 string Evaluator::evaluatePrint(const ASTNode &node)
 {
+    if (node.children.empty())
+    {
+        cout << endl;
+        return "";
+    }
+
     for (const auto &child : node.children)
     {
         if (child.type == "NUMBER" || child.type == "INTEGER" || child.type == "FLOAT" || child.type == "DOUBLE")
@@ -183,7 +189,6 @@ string Evaluator::evaluatePrint(const ASTNode &node)
         }
     }
 
-    cout << endl;
     return "";
 }
 
