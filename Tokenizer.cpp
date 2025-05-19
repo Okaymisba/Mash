@@ -33,7 +33,7 @@ vector<Token> Tokenizer::tokenize(const string &input)
         {"DECREMENT", R"(--)"},
         {"NOT", R"(!)"},
         {"CHECK_IF", R"(\bcheck[ \t]+if\b)"},
-        {"ELSE_IF", R"(\belse[ \t]+if\b)"},
+        {"ELSE IF", R"(\belse[ \t]+if\b)"},
         {"ELSE", R"(\belse\b)"},
         {"FOR", R"(\bfor\b)"},
         {"IN", R"(\bin\b)"},
