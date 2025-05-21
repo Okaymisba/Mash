@@ -38,6 +38,10 @@ bool Parser::ValidateDataType(const ASTNode &node1, const ASTNode &node2)
     {
         return true;
     }
+    else if (node2.type == "INPUT")
+    {
+        return true;
+    }
     else
         return false;
 }

@@ -84,29 +84,33 @@ string Evaluator::evaluateAssignment(const ASTNode &node)
     {
         setVariableValue(identifier, node.children[1].value, "STRING");
     }
-    else if (node.children[1].type == "CHAR")
+    else if (node.children[1].type == "INPUT")
     {
-        setVariableValue(identifier, node.children[1].value, "CHAR");
-    }
-    else if (node.children[1].type == "BOOL")
-    {
-        setVariableValue(identifier, node.children[1].value, "BOOL");
-    }
-    else if (node.children[1].type == "DOUBLE")
-    {
-        setVariableValue(identifier, node.children[1].value, "DOUBLE");
-    }
-    else if (node.children[1].type == "FLOAT")
-    {
-        setVariableValue(identifier, node.children[1].value, "FLOAT");
-    }
-    else if (node.children[1].type == "LONG")
-    {
-        setVariableValue(identifier, node.children[1].value, "LONG");
-    }
-    else if (node.children[1].type == "INTEGER")
-    {
-        setVariableValue(identifier, node.children[1].value, "INTEGER");
+        string input = getInput();
+        if (isInteger(input))
+        {
+            setVariableValue(identifier, input, "INTEGER");
+        }
+        else if (isFloat(input))
+        {
+            setVariableValue(identifier, input, "FLOAT");
+        }
+        else if (isDouble(input))
+        {
+            setVariableValue(identifier, input, "DOUBLE");
+        }
+        else if (isLong(input))
+        {
+            setVariableValue(identifier, input, "LONG");
+        }
+        else if (isChar(input))
+        {
+            setVariableValue(identifier, input, "CHAR");
+        }
+        else
+        {
+            setVariableValue(identifier, input, "STRING");
+        }
     }
     else
     {
@@ -122,10 +126,6 @@ string Evaluator::evaluateAssignment(const ASTNode &node)
             {
                 setVariableValue(identifier, value, "FLOAT");
             }
-        }
-        else if (value.size() >= 10)
-        {
-            setVariableValue(identifier, value, "LONG");
         }
         else
         {
@@ -169,7 +169,8 @@ string Evaluator::evaluatePrint(const ASTNode &node)
         }
         else if (child.type == "IDENTIFIER")
         {
-            cout << getVariableValue(child.value);
+            auto value = getVariableValue(child.value);
+            cout << value;
         }
         else if (child.type == "EXPRESSION")
         {

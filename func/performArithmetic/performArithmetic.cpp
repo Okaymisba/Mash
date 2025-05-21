@@ -22,19 +22,15 @@
 string Evaluator::performArithmetic(const string &left, const string &right, const string &op)
 {
 
-    if (op == "+")
-    {
-        if (isString(left) || isString(right))
-        {
-            return left + right;
-        }
-    }
-
-    double leftVal = isInteger(left) ? stod(left) : 0;
-    double rightVal = isInteger(right) ? stod(right) : 0;
+    double leftVal = stod(left);
+    double rightVal = stod(right);
     double result = 0;
 
-    if (op == "-")
+    if (op == "+")
+    {
+        result = leftVal + rightVal;
+    }
+    else if (op == "-")
     {
         result = leftVal - rightVal;
     }
@@ -52,10 +48,6 @@ string Evaluator::performArithmetic(const string &left, const string &right, con
     }
     else if (op == "%")
     {
-        if (!isInteger(left) || !isInteger(right))
-        {
-            throw runtime_error("Modulo operator requires integer operands");
-        }
         result = static_cast<int>(leftVal) % static_cast<int>(rightVal);
     }
     else

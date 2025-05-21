@@ -54,6 +54,8 @@ private:
     ASTNode parseFunctionCall();
 
     ASTNode parseFunction();
+
+    ASTNode parseInput();
 };
 
 #endif

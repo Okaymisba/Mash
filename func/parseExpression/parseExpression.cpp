@@ -18,7 +18,11 @@ ASTNode Parser::parseExpression(int minPrecedence)
 
     if (peek().type == "IDENTIFIER" && currentIndex + 1 < tokens.size() && tokens[currentIndex + 1].type == "OPEN_ROUND_BRACKET")
     {
-        left = parseFunctionCall(); 
+        left = parseFunctionCall();
+    }
+    else if (peek().type == "INPUT")
+    {
+        left = parseInput();
     }
     else
     {
