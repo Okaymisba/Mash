@@ -55,6 +55,7 @@ vector<Token> Tokenizer::tokenize(const string &input)
         {"FLOAT", R"(\b\d+\.\d+f\b)"},
         {"DOUBLE", R"(\b\d+\.\d+\b)"},
         {"INTEGER", R"(\b\d+\b)"},
+        {"INPUT", R"(\breadline\b)"},
         {"TYPE", R"(\bint\b|\bfloat\b|\bdouble\b|\blong\b|\bbool\b|\bstring\b|\bchar\b)"},
         {"IDENTIFIER", R"(\b[a-zA-Z_][a-zA-Z0-9_]*\b)"}};
 

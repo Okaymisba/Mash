@@ -59,6 +59,7 @@ private:
     string performArithmetic(const string &left, const string &right, const string &op);
     string getVariableValue(const string &identifier);
     void setVariableValue(const string &identifier, const string &value, const string &type);
+    string getInput();
 
     
     bool isInteger(const string &value);

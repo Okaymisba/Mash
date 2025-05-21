@@ -27,6 +27,9 @@ string Evaluator::evaluateExpression(const ASTNode &node)
     {
         return getVariableValue(node.value);
     }
+    else if (node.type == "INPUT"){
+        return getInput();
+    }
     else if (node.type == "EXPRESSION")
     {
         if (node.children.size() != 3)
