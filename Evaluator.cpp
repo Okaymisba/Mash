@@ -2,6 +2,9 @@
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
+#include <array>
+#include <memory>
+#include <cstdio>
 
 using namespace std;
 
@@ -13,47 +16,39 @@ using namespace std;
  * If the node type is not recognized, a runtime error is thrown.
  */
 
-void Evaluator::evaluate(const ASTNode &node)
-{
-    if (node.type == "PROGRAM")
-    {
-        for (const auto &child : node.children)
-        {
+void Evaluator::evaluate(const ASTNode &node) {
+    if (node.type == "PROGRAM") {
+        for (const auto &child: node.children) {
             evaluate(child);
         }
-    }
-    else if (node.type == "ASSIGNMENT")
-    {
+    } else if (node.type == "ASSIGNMENT") {
         evaluateAssignment(node);
-    }
-    else if (node.type == "PRINT")
-    {
+    } else if (node.type == "PRINT") {
         evaluatePrint(node);
-    }
-    else if (node.type == "IF STATEMENT")
-    {
+    } else if (node.type == "IF STATEMENT") {
         evaluateIfStatement(node);
-    }
-    else if (node.type == "WHILE")
-    {
+    } else if (node.type == "WHILE") {
         evaluateWhileLoop(node);
-    }
-    else if (node.type == "FOR")
-    {
+    } else if (node.type == "FOR") {
         evaluateForLoop(node);
-    }
-    else if (node.type == "FUNCTION")
-    {
-
+    } else if (node.type == "FUNCTION") {
         string functionName = node.children[0].value;
         functions[functionName] = node;
-    }
-    else if (node.type == "FUNCTION_CALL")
-    {
+    } else if (node.type == "FUNCTION_CALL") {
         evaluateFunctionCall(node);
-    }
-    else
-    {
+    } else if (node.type == "DATABASE_CALL") {
+        if (!node.children.empty()) {
+            string query = node.children[0].value;
+            if (query.size() >= 2 &&
+                ((query.front() == '"' && query.back() == '"') ||
+                 (query.front() == '\'' && query.back() == '\''))) {
+                query = query.substr(1, query.size() - 2);
+            }
+            string result = executeDatabaseQuery(query);
+        } else {
+            throw runtime_error("Database call is missing query");
+        }
+    } else {
         throw runtime_error("Unknown node type: " + node.type);
     }
 }
@@ -71,64 +66,40 @@ void Evaluator::evaluate(const ASTNode &node)
  * @throws runtime_error If the assignment node does not have exactly two children.
  */
 
-string Evaluator::evaluateAssignment(const ASTNode &node)
-{
-    if (node.children.size() < 2)
-    {
+string Evaluator::evaluateAssignment(const ASTNode &node) {
+    if (node.children.size() < 2) {
         throw runtime_error("Invalid assignment: expected identifier and value");
     }
 
     string identifier = node.children[0].value;
 
-    if (node.children[1].type == "STRING")
-    {
+    if (node.children[1].type == "STRING") {
         setVariableValue(identifier, node.children[1].value, "STRING");
-    }
-    else if (node.children[1].type == "INPUT")
-    {
+    } else if (node.children[1].type == "INPUT") {
         string input = getInput();
-        if (isInteger(input))
-        {
+        if (isInteger(input)) {
             setVariableValue(identifier, input, "INTEGER");
-        }
-        else if (isFloat(input))
-        {
+        } else if (isFloat(input)) {
             setVariableValue(identifier, input, "FLOAT");
-        }
-        else if (isDouble(input))
-        {
+        } else if (isDouble(input)) {
             setVariableValue(identifier, input, "DOUBLE");
-        }
-        else if (isLong(input))
-        {
+        } else if (isLong(input)) {
             setVariableValue(identifier, input, "LONG");
-        }
-        else if (isChar(input))
-        {
+        } else if (isChar(input)) {
             setVariableValue(identifier, input, "CHAR");
-        }
-        else
-        {
+        } else {
             setVariableValue(identifier, input, "STRING");
         }
-    }
-    else
-    {
+    } else {
         string value = evaluateExpression(node.children[1]);
 
-        if (value.find('.') != string::npos)
-        {
-            if (value.size() > 8)
-            {
+        if (value.find('.') != string::npos) {
+            if (value.size() > 8) {
                 setVariableValue(identifier, value, "DOUBLE");
-            }
-            else
-            {
+            } else {
                 setVariableValue(identifier, value, "FLOAT");
             }
-        }
-        else
-        {
+        } else {
             setVariableValue(identifier, value, "INTEGER");
         }
     }
@@ -153,39 +124,25 @@ string Evaluator::evaluateAssignment(const ASTNode &node)
  * @return An empty string.
  * @throws runtime_error If an unsupported expression type is encountered.
  */
-string Evaluator::evaluatePrint(const ASTNode &node)
-{
-    if (node.children.empty())
-    {
+string Evaluator::evaluatePrint(const ASTNode &node) {
+    if (node.children.empty()) {
         cout << endl;
         return "";
     }
 
-    for (const auto &child : node.children)
-    {
-        if (child.type == "NUMBER" || child.type == "INTEGER" || child.type == "FLOAT" || child.type == "DOUBLE")
-        {
+    for (const auto &child: node.children) {
+        if (child.type == "NUMBER" || child.type == "INTEGER" || child.type == "FLOAT" || child.type == "DOUBLE") {
             cout << child.value;
-        }
-        else if (child.type == "IDENTIFIER")
-        {
+        } else if (child.type == "IDENTIFIER") {
             auto value = getVariableValue(child.value);
             cout << value;
-        }
-        else if (child.type == "EXPRESSION")
-        {
+        } else if (child.type == "EXPRESSION") {
             cout << evaluateExpression(child);
-        }
-        else if (child.type == "STRING")
-        {
+        } else if (child.type == "STRING") {
             cout << child.value;
-        }
-        else if (child.type == "FUNCTION_CALL")
-        {
+        } else if (child.type == "FUNCTION_CALL") {
             cout << evaluateFunctionCall(child);
-        }
-        else
-        {
+        } else {
             throw runtime_error("Unsupported expression type: " + node.type);
         }
     }
@@ -204,22 +161,16 @@ string Evaluator::evaluatePrint(const ASTNode &node)
  * @param node The Abstract Syntax Tree node representing the if statement.
  */
 
-void Evaluator::evaluateIfStatement(const ASTNode &node)
-{
+void Evaluator::evaluateIfStatement(const ASTNode &node) {
     bool conditionMet = false;
 
-    for (const auto &child : node.children)
-    {
-        if (child.type == "IF" || (child.type == "ELSE IF" && !conditionMet))
-        {
-            if (evaluateCondition(child.children[0]) == "true")
-            {
+    for (const auto &child: node.children) {
+        if (child.type == "IF" || (child.type == "ELSE IF" && !conditionMet)) {
+            if (evaluateCondition(child.children[0]) == "true") {
                 evaluateBody(child.children[1]);
                 conditionMet = true;
             }
-        }
-        else if (child.type == "ELSE" && !conditionMet)
-        {
+        } else if (child.type == "ELSE" && !conditionMet) {
             evaluateBody(child.children[0]);
             conditionMet = true;
         }
@@ -237,10 +188,8 @@ void Evaluator::evaluateIfStatement(const ASTNode &node)
  * @param node The Abstract Syntax Tree node representing the while loop statement.
  */
 
-void Evaluator::evaluateWhileLoop(const ASTNode &node)
-{
-    while (evaluateCondition(node.children[0]) == "true")
-    {
+void Evaluator::evaluateWhileLoop(const ASTNode &node) {
+    while (evaluateCondition(node.children[0]) == "true") {
         evaluateBody(node.children[1]);
     }
 }
@@ -257,8 +206,7 @@ void Evaluator::evaluateWhileLoop(const ASTNode &node)
  * @param node The Abstract Syntax Tree node representing the for loop statement.
  */
 
-void Evaluator::evaluateForLoop(const ASTNode &node)
-{
+void Evaluator::evaluateForLoop(const ASTNode &node) {
     const string &identifier = node.children[0].value;
     const ASTNode &rangeNode = node.children[1];
     const ASTNode &body = node.children.back();
@@ -267,8 +215,7 @@ void Evaluator::evaluateForLoop(const ASTNode &node)
     int end = stoi(evaluateExpression(rangeNode.children[2].children[0]));
 
     int step = 1;
-    if (node.children.size() > 3)
-    {
+    if (node.children.size() > 3) {
         step = stoi(evaluateExpression(node.children[2].children[0]));
     }
 
@@ -276,87 +223,86 @@ void Evaluator::evaluateForLoop(const ASTNode &node)
 
     char numBuffer[32];
 
-    auto setVarAndEval = [&](int val)
-    {
+    auto setVarAndEval = [&](int val) {
         sprintf(numBuffer, "%d", val);
         setVariableValue(identifier, numBuffer, "INTEGER");
         evaluateBody(body);
     };
 
-    if (rangeType == "TO")
-    {
-        for (int i = start; i <= end; i += step)
-        {
+    if (rangeType == "TO") {
+        for (int i = start; i <= end; i += step) {
             setVarAndEval(i);
         }
-    }
-    else if (rangeType == "DOWNTO")
-    {
-        for (int i = start; i >= end; i -= step)
-        {
+    } else if (rangeType == "DOWNTO") {
+        for (int i = start; i >= end; i -= step) {
             setVarAndEval(i);
         }
-    }
-    else if (rangeType == "UNTIL")
-    {
-        for (int i = start; i < end; i += step)
-        {
+    } else if (rangeType == "UNTIL") {
+        for (int i = start; i < end; i += step) {
             setVarAndEval(i);
         }
-    }
-    else if (rangeType == "DOWNUNTIL")
-    {
-        for (int i = start; i > end; i -= step)
-        {
+    } else if (rangeType == "DOWNUNTIL") {
+        for (int i = start; i > end; i -= step) {
             setVarAndEval(i);
         }
-    }
-    else
-    {
+    } else {
         throw runtime_error("Invalid range type in for loop: " + rangeType);
     }
 }
-bool Evaluator::isInteger(const string &value)
-{
+
+bool Evaluator::isInteger(const string &value) {
     return regex_match(value, regex("^-?\\d+$"));
 }
 
-bool Evaluator::isFloat(const string &value)
-{
+bool Evaluator::isFloat(const string &value) {
     return regex_match(value, regex("^-?\\d*\\.\\d+$"));
 }
 
-bool Evaluator::isBool(const string &value)
-{
+bool Evaluator::isBool(const string &value) {
     return value == "true" || value == "false";
 }
 
-bool Evaluator::isChar(const string &value)
-{
+bool Evaluator::isChar(const string &value) {
     return value.size() == 1;
 }
 
-bool Evaluator::isString(const string &value)
-{
+bool Evaluator::isString(const string &value) {
     return !value.empty();
 }
 
-bool Evaluator::isLong(const string &value)
-{
+bool Evaluator::isLong(const string &value) {
     return isInteger(value);
 }
 
-bool Evaluator::isDouble(const string &value)
-{
+bool Evaluator::isDouble(const string &value) {
     return isFloat(value);
 }
 
-string Evaluator::evaluateFunctionCall(const ASTNode &node)
-{
+string Evaluator::executeDatabaseQuery(const string &query) {
+    string command = "./exe/MashDB \"" + query + "\"";
+    array<char, 128> buffer;
+    string result;
+
+    unique_ptr<FILE, decltype(&pclose)> pipe(popen(command.c_str(), "r"), pclose);
+    if (!pipe) {
+        throw runtime_error("Failed to execute database query");
+    }
+
+    while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) {
+        result += buffer.data();
+    }
+
+    if (!result.empty() && result.back() == '\n') {
+        result.pop_back();
+    }
+
+    return result;
+}
+
+string Evaluator::evaluateFunctionCall(const ASTNode &node) {
     string functionName = node.value;
 
-    if (functions.find(functionName) == functions.end())
-    {
+    if (functions.find(functionName) == functions.end()) {
         throw runtime_error("Undefined function: " + functionName);
     }
 
@@ -365,28 +311,21 @@ string Evaluator::evaluateFunctionCall(const ASTNode &node)
     ASTNode parameters = functionDefinition.children[1];
     ASTNode body = functionDefinition.children[2];
 
-    if (parameters.children.size() != node.children.size())
-    {
+    if (parameters.children.size() != node.children.size()) {
         throw runtime_error("Argument count mismatch for function: " + functionName);
     }
 
     map<string, string> localVariables;
 
-    for (size_t i = 0; i < node.children.size(); ++i)
-    {
+    for (size_t i = 0; i < node.children.size(); ++i) {
         string paramName = parameters.children[i].children[1].value;
         string argValue = evaluateExpression(node.children[i]);
         string paramType;
-        if (isInteger(argValue))
-        {
+        if (isInteger(argValue)) {
             paramType = "INTEGER";
-        }
-        else if (isFloat(argValue))
-        {
+        } else if (isFloat(argValue)) {
             paramType = "FLOAT";
-        }
-        else
-        {
+        } else {
             paramType = "STRING";
         }
 
@@ -398,12 +337,9 @@ string Evaluator::evaluateFunctionCall(const ASTNode &node)
     variables = localVariables;
 
     string result;
-    try
-    {
+    try {
         result = evaluateBody(body);
-    }
-    catch (const ReturnException &e)
-    {
+    } catch (const ReturnException &e) {
         result = e.value();
     }
 
