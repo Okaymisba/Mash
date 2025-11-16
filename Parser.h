@@ -7,10 +7,10 @@
 
 using namespace std;
 
-class Parser
-{
+class Parser {
 public:
-    explicit Parser(const vector<Token> &tokens) : tokens(tokens), currentIndex(0) {}
+    explicit Parser(const vector<Token> &tokens) : tokens(tokens), currentIndex(0) {
+    }
 
     ASTNode parse();
 
@@ -54,6 +54,8 @@ private:
     ASTNode parseFunctionCall();
 
     ASTNode parseFunction();
+
+    ASTNode parseDatabaseCall();
 
     ASTNode parseInput();
 };

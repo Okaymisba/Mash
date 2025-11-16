@@ -16,21 +16,15 @@ using namespace std;
  * @return An Abstract Syntax Tree root node representing the program.
  */
 
-ASTNode Parser::parse()
-{
+ASTNode Parser::parse() {
     ASTNode root("PROGRAM");
-    while (peek().type != "EOF")
-    {
-        if (peek().type == "LINE_BREAK")
-        {
+    while (peek().type != "EOF") {
+        if (peek().type == "LINE_BREAK") {
             consume("LINE_BREAK");
-        }
-        else
-        {
+        } else {
             ASTNode statement = parseStatement();
             root.children.push_back(statement);
-            if (peek().type == "SEMICOLON")
-            {
+            if (peek().type == "SEMICOLON") {
                 consume("SEMICOLON");
             }
         }
@@ -50,15 +44,13 @@ ASTNode Parser::parse()
  * @return An Abstract Syntax Tree node representing the assignment statement.
  */
 
-ASTNode Parser::parseAssignment()
-{
+ASTNode Parser::parseAssignment() {
     Token identifier = consume("IDENTIFIER");
     ASTNode assignment("ASSIGNMENT");
 
     ASTNode identifierNode("IDENTIFIER", identifier.value);
 
-    if (peek().type == "COLON")
-    {
+    if (peek().type == "COLON") {
         consume("COLON");
         Token type = consume("TYPE");
         ASTNode datatype(type.type, type.value);
@@ -69,21 +61,16 @@ ASTNode Parser::parseAssignment()
         consume("ASSIGN");
 
         ASTNode expressionNode = parseExpression();
-        if (ValidateDataType(identifierNode, expressionNode))
-        {
+        if (ValidateDataType(identifierNode, expressionNode)) {
             assignment.children.push_back(expressionNode);
             consume("SEMICOLON");
             consume("LINE_BREAK");
 
             return assignment;
-        }
-        else
-            throw runtime_error("Unexpected type: Declared " + identifierNode.children[0].value + " but got " + expressionNode.type);
-    }
-
-    else
-    {
-
+        } else
+            throw runtime_error(
+                "Unexpected type: Declared " + identifierNode.children[0].value + " but got " + expressionNode.type);
+    } else {
         assignment.children.push_back(identifierNode);
 
         consume("ASSIGN");
@@ -109,21 +96,18 @@ ASTNode Parser::parseAssignment()
  * @return An Abstract Syntax Tree node representing the print statement.
  */
 
-ASTNode Parser::parsePrintStatement()
-{
+ASTNode Parser::parsePrintStatement() {
     consume("PRINT");
     consume("OPEN_ROUND_BRACKET");
     ASTNode printNode("PRINT");
 
-    while (peek().type != "CLOSE_ROUND_BRACKET")
-    {
+    while (peek().type != "CLOSE_ROUND_BRACKET") {
         ASTNode expression = parseExpression();
         printNode.children.push_back(expression);
     }
 
     consume("CLOSE_ROUND_BRACKET");
-    if (peek().type == "SEMICOLON")
-    {
+    if (peek().type == "SEMICOLON") {
         consume("SEMICOLON");
     }
     return printNode;
@@ -144,8 +128,7 @@ ASTNode Parser::parsePrintStatement()
  * @return An Abstract Syntax Tree node representing the if statement.
  */
 
-ASTNode Parser::parseIfStatement()
-{
+ASTNode Parser::parseIfStatement() {
     consume("CHECK_IF");
     ASTNode ifStatement("IF STATEMENT");
 
@@ -157,8 +140,7 @@ ASTNode Parser::parseIfStatement()
     ifNode.children.push_back(body);
     ifStatement.children.push_back(ifNode);
 
-    while (peek().type == "ELSE IF")
-    {
+    while (peek().type == "ELSE IF") {
         consume("ELSE IF");
         ASTNode elseIfNode("ELSE IF");
         ASTNode condition = parseCondition();
@@ -169,8 +151,7 @@ ASTNode Parser::parseIfStatement()
         ifStatement.children.push_back(elseIfNode);
     }
 
-    if (peek().type == "ELSE")
-    {
+    if (peek().type == "ELSE") {
         consume("ELSE");
         ASTNode elseNode("ELSE");
         insideFunction = false;
@@ -193,8 +174,7 @@ ASTNode Parser::parseIfStatement()
  * @return An Abstract Syntax Tree node representing the while loop statement.
  */
 
-ASTNode Parser::parseWhileLoop()
-{
+ASTNode Parser::parseWhileLoop() {
     consume("WHILE");
     ASTNode whileNode("WHILE");
     ASTNode condition = parseCondition();
@@ -216,20 +196,17 @@ ASTNode Parser::parseWhileLoop()
  * @return An Abstract Syntax Tree node representing the parsed statement.
  * @throws runtime_error If the token type is not a valid statement type.
  */
-ASTNode Parser::parseFunctionCall()
-{
+ASTNode Parser::parseFunctionCall() {
     Token functionName = consume("IDENTIFIER");
     ASTNode functionCall("FUNCTION_CALL", functionName.value);
 
     consume("OPEN_ROUND_BRACKET");
 
-    while (peek().type != "CLOSE_ROUND_BRACKET")
-    {
+    while (peek().type != "CLOSE_ROUND_BRACKET") {
         ASTNode argument = parseExpression();
         functionCall.children.push_back(argument);
 
-        if (peek().type == "COMMA")
-        {
+        if (peek().type == "COMMA") {
             consume("COMMA");
         }
     }
@@ -237,6 +214,35 @@ ASTNode Parser::parseFunctionCall()
     consume("CLOSE_ROUND_BRACKET");
 
     return functionCall;
+}
+
+ASTNode Parser::parseDatabaseCall() {
+    consume("DATABASE");
+
+    if (peek().type != "DOT") {
+        throw runtime_error("Expected '.' after Database");
+    }
+    consume("DOT");
+
+    if (peek().type != "IDENTIFIER" || peek().value != "execute") {
+        throw runtime_error("Expected 'execute' method after Database.");
+    }
+    consume("IDENTIFIER");
+
+    ASTNode dbCall("DATABASE_CALL", "Database.execute");
+
+    consume("OPEN_ROUND_BRACKET");
+
+    if (peek().type != "STRING") {
+        throw runtime_error("Expected a string literal as query argument");
+    }
+    string query = consume("STRING").value;
+
+    dbCall.children.push_back(ASTNode("STRING", query));
+
+    consume("CLOSE_ROUND_BRACKET");
+
+    return dbCall;
 }
 
 /**
@@ -249,45 +255,29 @@ ASTNode Parser::parseFunctionCall()
  * @return An Abstract Syntax Tree node representing the parsed statement.
  * @throws runtime_error If the token type is not a valid statement type.
  */
-ASTNode Parser::parseStatement()
-{
+ASTNode Parser::parseStatement() {
     Token token = peek();
 
-    if (token.type == "PRINT")
-    {
+    if (token.type == "PRINT") {
         return parsePrintStatement();
-    }
-    else if (token.type == "RETURN")
-    {
+    } else if (token.type == "RETURN") {
         return parseReturnStatement();
-    }
-    else if (token.type == "IDENTIFIER" && currentIndex + 1 < tokens.size() && tokens[currentIndex + 1].type == "OPEN_ROUND_BRACKET")
-    {
+    } else if (token.type == "DATABASE") {
+        return parseDatabaseCall();
+    } else if (token.type == "IDENTIFIER" && currentIndex + 1 < tokens.size() &&
+               tokens[currentIndex + 1].type == "OPEN_ROUND_BRACKET") {
         return parseFunctionCall();
-    }
-    else if (token.type == "IDENTIFIER")
-    {
-
+    } else if (token.type == "IDENTIFIER") {
         return parseAssignment();
-    }
-    else if (token.type == "CHECK_IF")
-    {
+    } else if (token.type == "CHECK_IF") {
         return parseIfStatement();
-    }
-    else if (token.type == "WHILE")
-    {
+    } else if (token.type == "WHILE") {
         return parseWhileLoop();
-    }
-    else if (token.type == "FOR")
-    {
+    } else if (token.type == "FOR") {
         return parseForLoop();
-    }
-    else if (token.type == "FUNCTION")
-    {
+    } else if (token.type == "FUNCTION") {
         return parseFunction();
-    }
-    else
-    {
+    } else {
         throw runtime_error("Invalid statement: unexpected token " + token.type);
     }
 }
@@ -302,8 +292,7 @@ ASTNode Parser::parseStatement()
  * @return An Abstract Syntax Tree representing for loop statement
  */
 
-ASTNode Parser::parseForLoop()
-{
+ASTNode Parser::parseForLoop() {
     consume("FOR");
 
     ASTNode ForNode("FOR");
@@ -323,14 +312,12 @@ ASTNode Parser::parseForLoop()
     start.children.push_back(start_value);
     rangeNode.children.push_back(start);
     Token range_type = peek();
-    if (range_type.type == "TO" || range_type.type == "DOWNTO" || range_type.type == "DOWNUNTIL" || range_type.type == "UNTIL")
-    {
+    if (range_type.type == "TO" || range_type.type == "DOWNTO" || range_type.type == "DOWNUNTIL" || range_type.type ==
+        "UNTIL") {
         consume(range_type.type);
         ASTNode RangeType(range_type.type);
         rangeNode.children.push_back(RangeType);
-    }
-    else
-    {
+    } else {
         throw runtime_error("Invalid range type: Expected to, until, downuntil, downto");
     }
     ASTNode end("END");
@@ -340,8 +327,7 @@ ASTNode Parser::parseForLoop()
 
     ForNode.children.push_back(rangeNode);
 
-    if (peek().type == "STEP")
-    {
+    if (peek().type == "STEP") {
         consume("STEP");
         ASTNode step("STEP");
         ASTNode step_value = parseExpression();
@@ -367,8 +353,7 @@ ASTNode Parser::parseForLoop()
  * by calling the parseFuncBody() function.
  * @return An Abstract Syntax Tree node representing the function definition
  */
-ASTNode Parser::parseFunction()
-{
+ASTNode Parser::parseFunction() {
     consume("FUNCTION");
 
     ASTNode functionNode("FUNCTION");
@@ -380,33 +365,25 @@ ASTNode Parser::parseFunction()
 
     ASTNode parametersNode("PARAMETERS");
 
-    if (peek().type != "CLOSE_ROUND_BRACKET")
-    {
-        while (true)
-        {
-            Token paramType = (peek().type == "TYPE") ? consume("TYPE") : Token("TYPE", ""); 
+    if (peek().type != "CLOSE_ROUND_BRACKET") {
+        while (true) {
+            Token paramType = (peek().type == "TYPE") ? consume("TYPE") : Token("TYPE", "");
 
-            Token paramName = consume("IDENTIFIER"); 
+            Token paramName = consume("IDENTIFIER");
             ASTNode paramNode("PARAMETER");
 
-            if (paramType.type != "") 
-            {
+            if (paramType.type != "") {
                 paramNode.children.push_back(ASTNode("TYPE", paramType.value));
-            }
-            else
-            {
-                paramNode.children.push_back(ASTNode("TYPE", "ANY")); 
+            } else {
+                paramNode.children.push_back(ASTNode("TYPE", "ANY"));
             }
 
             paramNode.children.push_back(ASTNode("IDENTIFIER", paramName.value));
             parametersNode.children.push_back(paramNode);
 
-            if (peek().type == "COMMA")
-            {
+            if (peek().type == "COMMA") {
                 consume("COMMA");
-            }
-            else
-            {
+            } else {
                 break;
             }
         }
