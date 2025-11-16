@@ -6,9 +6,8 @@
 
 using namespace std;
 
-vector<Token> Tokenizer::tokenize(const string &input)
-{
-    vector<pair<string, string>> patterns = {
+vector<Token> Tokenizer::tokenize(const string &input) {
+    vector<pair<string, string> > patterns = {
         {"WHITESPACE", R"([ \t\r]+)"},
         {"NEWLINE", R"(\n)"},
         {"MULTI_LINE_COMMENT", R"(/\*[\s\S]*?\*/)"},
@@ -48,6 +47,7 @@ vector<Token> Tokenizer::tokenize(const string &input)
         {"PRINT", R"(\bprint\b)"},
         {"RETURN", R"(\breturn\b)"},
         {"FUNCTION", R"(\bfun\b)"},
+        {"DATABASE", R"(\bDatabase\b)"},
         {"NULL", R"(\bnull\b)"},
         {"BOOL", R"(\btrue\b|\bfalse\b)"},
         {"CHAR", R"('(?:[^'\\]|\\.)')"},
@@ -57,11 +57,11 @@ vector<Token> Tokenizer::tokenize(const string &input)
         {"INTEGER", R"(\b\d+\b)"},
         {"INPUT", R"(\breadline\b)"},
         {"TYPE", R"(\bint\b|\bfloat\b|\bdouble\b|\blong\b|\bbool\b|\bstring\b|\bchar\b)"},
-        {"IDENTIFIER", R"(\b[a-zA-Z_][a-zA-Z0-9_]*\b)"}};
+        {"IDENTIFIER", R"(\b[a-zA-Z_][a-zA-Z0-9_]*\b)"}
+    };
 
     string regexString;
-    for (size_t i = 0; i < patterns.size(); ++i)
-    {
+    for (size_t i = 0; i < patterns.size(); ++i) {
         if (i > 0)
             regexString += "|";
         regexString += "(" + patterns[i].second + ")";
@@ -74,19 +74,15 @@ vector<Token> Tokenizer::tokenize(const string &input)
 
     string lastType = "";
 
-    while (regex_search(searchStart, input.cend(), match, regexPattern))
-    {
-        for (size_t i = 0; i < patterns.size(); ++i)
-        {
-            if (match[i + 1].matched)
-            {
+    while (regex_search(searchStart, input.cend(), match, regexPattern)) {
+        for (size_t i = 0; i < patterns.size(); ++i) {
+            if (match[i + 1].matched) {
                 string type = patterns[i].first;
                 string value = match[i + 1].str();
 
                 if (type == "WHITESPACE" || type == "COMMENT" || type == "MULTI_LINE_COMMENT")
                     break;
-                if (type == "NEWLINE")
-                {
+                if (type == "NEWLINE") {
                     tokens.emplace_back("LINE_BREAK", "\\n");
                     break;
                 }
@@ -94,35 +90,23 @@ vector<Token> Tokenizer::tokenize(const string &input)
                 if (type == "TYPE")
                     lastType = value;
 
-                if (type == "INTEGER")
-                {
+                if (type == "INTEGER") {
                     long long numValue = stoll(value);
                     if (lastType == "long" || numValue > INT_MAX)
                         type = "LONG";
                     else
                         type = "INTEGER";
-                }
-                else if (type == "DOUBLE" && lastType == "float")
-                {
+                } else if (type == "DOUBLE" && lastType == "float") {
                     type = "FLOAT";
-                }
-                else if (type == "STRING")
-                {
-                    if (value.length() >= 2)
-                    {
+                } else if (type == "STRING") {
+                    if (value.length() >= 2) {
                         value = value.substr(1, value.length() - 2);
                     }
-                }
-                else if (type == "CHAR")
-                {
-                    if (value.length() == 3)
-                    {
+                } else if (type == "CHAR") {
+                    if (value.length() == 3) {
                         value = value.substr(1, 1);
                     }
-                }
-
-                else if (type == "FLOAT" && !value.empty() && value.back() == 'f')
-                {
+                } else if (type == "FLOAT" && !value.empty() && value.back() == 'f') {
                     value.pop_back();
                 }
 
