@@ -279,7 +279,7 @@ bool Evaluator::isDouble(const string &value) {
 }
 
 string Evaluator::executeDatabaseQuery(const string &query) {
-    string command = "./exe/MashDB \"" + query + "\"";
+    string command = "./exe/MashDB --json \"" + query + "\"";
     array<char, 128> buffer;
     string result;
 
@@ -295,6 +295,7 @@ string Evaluator::executeDatabaseQuery(const string &query) {
     if (!result.empty() && result.back() == '\n') {
         result.pop_back();
     }
+    cout << result << endl;
 
     return result;
 }
